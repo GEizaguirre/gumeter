@@ -175,3 +175,6 @@ cython_debug/
 
 # VSCode
 .vscode/
+
+# Execution results
+benchmark_results/

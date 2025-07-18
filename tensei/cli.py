@@ -1,6 +1,8 @@
 import argparse
+
 from tensei.benchmarks.benchmarks import run_benchmark, run_all_benchmarks
 from tensei.plotting.plotting import generate_plots
+from tensei.config import PLOTS_DIR, RESULTS_DIR, Backend
 
 
 def main():
@@ -29,8 +31,14 @@ def main():
         "--backend",
         type=str,
         default="aws_lambda",
-        choices=["aws_lambda", "azure_functions", "google_cloud_functions"],
+        choices=[b.value for b in Backend],
         help="Backend to use for the benchmark.",
+    )
+    run_parser.add_argument(
+        "--output-dir",
+        type=str,
+        default=RESULTS_DIR,
+        help="Directory to save the generated plots.",
     )
 
     # --- Run all benchmarks ---
@@ -41,8 +49,14 @@ def main():
         "--backend",
         type=str,
         default="aws_lambda",
-        choices=["aws_lambda", "azure_functions", "google_cloud_functions"],
-        help="Backend to use for the benchmark."
+        choices=[b.value for b in Backend],
+        help="Backend to use for the benchmark.",
+    )
+    run_all_parser.add_argument(
+        "--output-dir",
+        type=str,
+        default=RESULTS_DIR,
+        help="Directory to save the generated plots.",
     )
 
     # --- Get plots ---
@@ -52,30 +66,44 @@ def main():
     plot_parser.add_argument(
         "--results-dir",
         type=str,
-        default="benchmark_results",
+        default=RESULTS_DIR,
         help="Path to the directory containing benchmark results.",
     )
     plot_parser.add_argument(
         "--output-dir",
         type=str,
-        default="plots",
+        default=PLOTS_DIR,
         help="Directory to save the generated plots.",
+    )
+    plot_parser.add_argument(
+        "--backend",
+        type=str,
+        default="AWS_LAMBDA",
+        choices=[b.name for b in Backend],
+        help="Backend to use for the benchmark.",
     )
 
     args = parser.parse_args()
 
     if args.command == "run":
+        print(
+            f"\033[95m\033[1mRunning benchmark '{args.benchmark_name}' "
+            f"with backend '{args.backend}'...\033[0m"
+        )
         results = run_benchmark(args.benchmark_name, args.backend)
-        print("Benchmark results:", results)
+        print(f"\033[1;32m\033[1mBenchmark results: {results}\033[0m")
         # You might want to save these results to a file
     elif args.command == "run-all":
+        print(
+            "\033[95m\033[1mRunning all benchmarks with backend "
+            f"'{args.backend}'...\033[0m"
+        )
         all_results = run_all_benchmarks(args.backend)
-        print("All benchmark results:", all_results)
+        print(f"\033[1;32m\033[1mAll benchmark results: {all_results}\033[0m")
         # Save all results to a file for plotting later
     elif args.command == "plot":
-        print(f"Generating plots from '{args.results_file}'...")
-        generate_plots(args.results_file, args.output_dir)
-        print(f"Plots saved to '{args.output_dir}'")
+        generate_plots(args.results_dir, args.output_dir)
+        print(f"\033[1;32m\033[1mPlots saved to '{args.output_dir}'\033[0m")
     else:
         parser.print_help()
 
