@@ -11,7 +11,9 @@ def elasticity_coefficient(
     time_steps = len(cp) * step_size
 
     # First term: Efficiency (Integral of C_r(t) / C_p(t))
-    efficiency = np.trapezoid(cr / cp, time_steps) / (time_steps[-1] - time_steps[0])
+    efficiency = (
+        np.trapezoid(cr / cp, time_steps) / (time_steps[-1] - time_steps[0])
+    )
 
     # Second term: Burst penalty (Integral of |d(C_p/C_r)/dt|)
     C_p_r_ratio = cp / cr

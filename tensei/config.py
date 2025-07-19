@@ -1,7 +1,7 @@
 from enum import Enum
 
 DEFAULT_MEMORY = 1769  # in MB
-MAX_TASKS = 10
+MAX_TASKS = 1
 PLOTS_DIR = "plots"
 RESULTS_DIR = "benchmark_results"
 
@@ -12,7 +12,7 @@ class Backend(Enum):
 
 
 class StorageBackend(Enum):
-    AWS_S3 = "s3"
+    AWS_S3 = "aws_s3"
     MINIO = "minio"
 
 
@@ -26,3 +26,11 @@ BACKEND_STORAGE = {
 DISTRIBUTED_BACKENDS = [
     Backend.AWS_LAMBDA
 ]
+
+
+RUNTIME_NAMES = {
+    Backend.AWS_LAMBDA.value: "tensei-lambda-runtime"
+}
+
+
+DEFAULT_TAG = "1.0"

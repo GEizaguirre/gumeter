@@ -1,8 +1,18 @@
 import argparse
 
-from tensei.benchmarks.benchmarks import run_benchmark, run_all_benchmarks
+from tensei.benchmarks.benchmarks import (
+    run_benchmark,
+    run_all_benchmarks
+)
 from tensei.plotting.plotting import generate_plots
-from tensei.config import PLOTS_DIR, RESULTS_DIR, Backend
+from tensei.config import (
+    DEFAULT_TAG,
+    PLOTS_DIR,
+    RESULTS_DIR,
+    Backend
+)
+from tensei.runtime.runtime import deploy_runtime
+from tensei.backend.set_config import set_config
 
 
 def main():
@@ -83,6 +93,40 @@ def main():
         help="Backend to use for the benchmark.",
     )
 
+    # --- Deploy a runtime ---
+    deploy_parser = subparsers.add_parser(
+        "deploy", help="Deploy a runtime for a specific backend."
+    )
+    deploy_parser.add_argument(
+        "backend",
+        type=str,
+        choices=[b.value for b in Backend],
+        help="Backend to deploy the runtime for.",
+    )
+    deploy_parser.add_argument(
+        "--runtime-name",
+        type=str,
+        default=None,
+        help="Optional name for the runtime.",
+    )
+    deploy_parser.add_argument(
+        "--tag",
+        type=str,
+        default=DEFAULT_TAG,
+        help="Optional tag for the runtime.",
+    )
+
+    # --- Set backend config ---
+    config_parser = subparsers.add_parser(
+        "set-config", help="Set configuration for a backend."
+    )
+    config_parser.add_argument(
+        "backend",
+        type=str,
+        choices=[b.value for b in Backend],
+        help="Backend to configure.",
+    )
+
     args = parser.parse_args()
 
     if args.command == "run":
@@ -104,6 +148,20 @@ def main():
     elif args.command == "plot":
         generate_plots(args.results_dir, args.output_dir)
         print(f"\033[1;32m\033[1mPlots saved to '{args.output_dir}'\033[0m")
+    elif args.command == "deploy":
+        deploy_runtime(
+            backend=args.backend,
+            runtime_name=args.runtime_name,
+            tag=args.tag
+        )
+        print(
+            f"\033[1;32m\033[1mRuntime for '{args.backend}' deployed.\033[0m"
+        )
+    elif args.command == "set-config":
+        set_config(args.backend)
+        print(
+            f"\033[1;32m\033[1mConfiguration for '{args.backend}' set.\033[0m"
+        )
     else:
         parser.print_help()
 

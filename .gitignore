@@ -178,3 +178,9 @@ cython_debug/
 
 # Execution results
 benchmark_results/
+
+# Runtime deployment
+tensei.zip
+
+# Development
+test_lithops.py

@@ -19,7 +19,9 @@ setup(
     },
     author='Germán T. Eizaguirre',
     author_email='germantelmo.eizaguirre@urv.cat',
-    description='Tensei: A benchmarking suite for elastic serverless data analytics.',
+    description=(
+        'Tensei: A benchmarking suite for elastic serverless data analytics.'
+    ),
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/GEizaguirre/tensei.git',
