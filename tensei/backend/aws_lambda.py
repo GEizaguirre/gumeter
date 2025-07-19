@@ -47,5 +47,10 @@ def set_lithops_config_aws(
             lithops_config["aws"][lithops_key] = aws_config[aws_key]
 
     with open(config_filename, 'w') as f:
-        yaml.dump(lithops_config, f, default_flow_style=False)
-        f.write('\n')
+        yaml.dump(
+            lithops_config,
+            f,
+            default_flow_style=False,
+            sort_keys=False,
+            indent=4
+        )

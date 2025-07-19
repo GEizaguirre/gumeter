@@ -29,7 +29,7 @@ WORKDIR $APP_HOME
 COPY lithops_aws_batch.zip .
 RUN unzip lithops_aws_batch.zip && rm lithops_aws_batch.zip
 
-COPY tensei.zip ${FUNCTION_DIR}
+COPY tensei.zip $APP_HOME
 RUN mkdir tensei-dir \
     && mv tensei.zip tensei-dir \
     && cd tensei-dir \

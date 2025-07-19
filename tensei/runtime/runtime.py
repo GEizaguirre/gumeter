@@ -2,8 +2,8 @@ import os
 import subprocess
 import sys
 
-
 from tensei.backend.aws_lambda import set_lithops_config_aws
+from tensei.backend.code_engine import get_docker_username_from_config
 from tensei.config import (
     BACKEND_STORAGE,
     RUNTIME_NAMES,
@@ -161,6 +161,48 @@ def deploy_aws_batch(
     print(f"AWS Batch runtime '{runtime_name}:{tag}' deployment complete.")
 
 
+def deploy_code_engine(
+    runtime_name: str = RUNTIME_NAMES[Backend.CODE_ENGINE.value],
+    tag: str = TAGS[Backend.CODE_ENGINE.value]
+):
+
+    print(f"Building AWS Code Engine runtime for tensei: {runtime_name}:{tag}")
+
+    docker_username = get_docker_username_from_config()
+
+    _run_command(
+        [
+            "lithops", "runtime", "delete",
+            "-b", "code_engine",
+            "-s", BACKEND_STORAGE["code_engine"],
+            f"{docker_username}/{runtime_name}:{tag}",
+            "--debug"
+        ]
+    )
+    _run_command(
+        [
+            "lithops", "runtime", "build",
+            "-f", "tensei/runtime/Dockerfile_code_engine",
+            "-b", "code_engine",
+            f"{docker_username}/{runtime_name}:{tag}",
+            "--debug"
+        ]
+    )
+    _run_command(
+        [
+            "lithops", "runtime", "update",
+            "-b", "code_engine",
+            "-s", BACKEND_STORAGE["code_engine"],
+            f"{docker_username}/{runtime_name}:{tag}",
+            "--debug"
+        ]
+    )
+    print(
+        f"AWS Code Engine runtime '{runtime_name}:{tag}'",
+        "deployment complete."
+    )
+
+
 def deploy_runtime(
     backend: str,
     runtime_name: str = None,
@@ -181,6 +223,11 @@ def deploy_runtime(
         )
     elif backend == "aws_batch":
         deploy_aws_batch(
+            runtime_name,
+            tag
+        )
+    elif backend == "code_engine":
+        deploy_code_engine(
             runtime_name,
             tag
         )

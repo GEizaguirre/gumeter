@@ -134,7 +134,10 @@ def main():
             f"with backend '{args.backend}'...\033[0m"
         )
         run_benchmark(args.benchmark_name, args.backend)
-        print(f"\033[1;32m\033[1mBenchmark finished\033[0m")
+        print(
+            f"\033[1;32m\033[1mBenchmark {args.benchmark_name}",
+            "finished\033[0m"
+        )
         # You might want to save these results to a file
     elif args.command == "run-all":
         print(
@@ -142,7 +145,10 @@ def main():
             f"'{args.backend}'...\033[0m"
         )
         all_results = run_all_benchmarks(args.backend)
-        print(f"\033[1;32m\033[1mAll benchmark results: {all_results}\033[0m")
+        print(
+            "\033[1;32m\033[1mAll benchmark results:",
+            f"{all_results}\033[0m"
+        )
         # Save all results to a file for plotting later
     elif args.command == "plot":
         generate_plots(args.results_dir, args.output_dir)

@@ -17,11 +17,12 @@
 import time
 import pickle
 import numpy as np
-
-from lithops import FunctionExecutor
 import pkg_resources
 
+from lithops import FunctionExecutor
+
 from tensei.config import (
+    DOCKER_BACKENDS,
     TENSEI_VERSION,
     BACKEND_MEMORY,
     MAX_TASKS,
@@ -29,6 +30,7 @@ from tensei.config import (
     RUNTIME_NAMES,
     TAGS
 )
+from tensei.backend.code_engine import get_docker_username_from_config
 
 
 def compute_flops(
@@ -68,13 +70,16 @@ def benchmark(
     runtime = RUNTIME_NAMES.get(backend)
     tag = TAGS.get(backend)
     memory = BACKEND_MEMORY.get(backend)
+    runtime = f"{runtime}:{tag}"
+    if backend in DOCKER_BACKENDS:
+        docker_username = get_docker_username_from_config()
+        runtime = f"{docker_username}/{runtime}"
     fexec = FunctionExecutor(
         backend=backend,
         storage=storage,
         runtime_memory=memory,
         log_level=log_level,
-        runtime=f"{runtime}:{tag}"
-        # runtime=None
+        runtime=runtime
     )
     start_time = time.time()
     worker_futures = fexec.map(

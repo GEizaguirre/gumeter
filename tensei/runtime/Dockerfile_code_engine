@@ -1,0 +1,59 @@
+# Python 3.10
+FROM python:3.10-slim-bullseye
+
+RUN apt-get update \
+    # add the required packages
+    && apt-get install -y unzip \
+    # cleanup package lists, they are not used anymore in this image
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-cache search linux-headers-generic
+
+COPY requirements.txt requirements.txt
+RUN pip install --upgrade pip setuptools six gevent && pip install --no-cache-dir -r requirements.txt
+
+RUN pip install --upgrade \
+    gunicorn \
+    flask \
+    pika \
+    boto3 \
+    ibm-cloud-sdk-core \
+    ibm-cos-sdk \
+    ibm-code-engine-sdk \
+    scikit-learn \
+    diskcache \
+    redis \
+    gevent \
+    requests \
+    PyYAML \
+    numpy \
+    cloudpickle \
+    ps-mem \
+    tblib \
+    psutil \
+    kubernetes \
+    ibm-vpc
+
+ENV PORT 8080
+ENV CONCURRENCY 1
+ENV TIMEOUT 600
+ENV PYTHONUNBUFFERED TRUE
+
+# Copy Lithops proxy and lib to the container image.
+ENV APP_HOME /lithops
+WORKDIR $APP_HOME
+
+COPY lithops_codeengine.zip .
+RUN unzip lithops_codeengine.zip && rm lithops_codeengine.zip
+
+COPY tensei.zip $APP_HOME
+RUN mkdir tensei-dir \
+    && mv tensei.zip tensei-dir \
+    && cd tensei-dir \
+    && unzip tensei.zip \
+    && pip3 install -e . \
+    && cd ..
+
+CMD exec gunicorn --bind :$PORT --workers $CONCURRENCY --timeout $TIMEOUT lithopsentry:proxy
+
+# Requirements.txt contains a list of dependencies for the Python Application #
+
