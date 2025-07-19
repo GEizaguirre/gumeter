@@ -6,8 +6,8 @@ import sys
 from tensei.backend.aws_lambda import set_lithops_config_aws
 from tensei.config import (
     BACKEND_STORAGE,
-    DEFAULT_TAG,
     RUNTIME_NAMES,
+    TAGS,
     Backend
 )
 
@@ -20,8 +20,9 @@ def _create_tensei_zip():
     exclude_patterns = [
         "data/*", ".git/*", "tests/*", "tensei.egg-info/*", "runtime/*",
         "venv/*", "tensei.zip", "test*", ".ipynb*", ".venv/*", "__pycache__/*",
-        "*/__pycache__/*", "**/__pycache__/*", "*.egg-info/*", "*.egg", "*.whl",
-        ".vscode/*", "build/*", "img/*", "benchmark_results/*", "plots/*",
+        "*/__pycache__/*", "**/__pycache__/*", "*.egg-info/*", "*.egg",
+        "*.whl", ".vscode/*", "build/*", "img/*", "benchmark_results/*",
+        "plots/*"
     ]
 
     try:
@@ -30,7 +31,6 @@ def _create_tensei_zip():
         ]
         for pattern in exclude_patterns:
             zip_command.extend(["-x", pattern])
-        print(zip_command)
         _run_command(zip_command)
         print(f"'{zip_filename}' created successfully.")
     except Exception as e:
@@ -54,8 +54,8 @@ def _run_command(command: list, cwd: str = None):
             output = process.stdout.readline()
             if output == '' and process.poll() is not None:
                 break
-            if output:
-                print(output, end='')
+            # if output:
+            #     print(output, end='')
         stderr = process.stderr.read()
         if stderr:
             print(f"Stderr: {stderr}")
@@ -85,7 +85,7 @@ def _run_command(command: list, cwd: str = None):
 
 def deploy_aws_lambda(
     runtime_name: str = RUNTIME_NAMES[Backend.AWS_LAMBDA.value],
-    tag: str = DEFAULT_TAG
+    tag: str = TAGS[Backend.AWS_LAMBDA.value]
 ):
 
     print(f"Building AWS Lambda runtime for tensei: {runtime_name}:{tag}")
@@ -122,19 +122,65 @@ def deploy_aws_lambda(
     print(f"AWS Lambda runtime '{runtime_name}:{tag}' deployment complete.")
 
 
+def deploy_aws_batch(
+    runtime_name: str = RUNTIME_NAMES[Backend.AWS_BATCH.value],
+    tag: str = TAGS[Backend.AWS_BATCH.value]
+):
+
+    print(f"Building AWS Batch runtime for tensei: {runtime_name}:{tag}")
+
+    set_lithops_config_aws()
+
+    _run_command(
+        [
+            "lithops", "runtime", "delete",
+            "-b", "aws_batch",
+            "-s", BACKEND_STORAGE["aws_batch"],
+            f"{runtime_name}:{tag}",
+            "--debug"
+        ]
+    )
+    _run_command(
+        [
+            "lithops", "runtime", "build",
+            "-f", "tensei/runtime/Dockerfile_batch",
+            "-b", "aws_batch",
+            f"{runtime_name}:{tag}",
+            "--debug"
+        ]
+    )
+    _run_command(
+        [
+            "lithops", "runtime", "update",
+            "-b", "aws_batch",
+            "-s", BACKEND_STORAGE["aws_batch"],
+            f"{runtime_name}:{tag}",
+            "--debug"
+        ]
+    )
+    print(f"AWS Batch runtime '{runtime_name}:{tag}' deployment complete.")
+
+
 def deploy_runtime(
     backend: str,
     runtime_name: str = None,
-    tag: str = DEFAULT_TAG
+    tag: str = None
 ):
 
     if runtime_name is None:
         runtime_name = RUNTIME_NAMES.get(backend)
+    if tag is None:
+        tag = TAGS.get(backend)
 
     _create_tensei_zip()
 
     if backend == "aws_lambda":
         deploy_aws_lambda(
+            runtime_name,
+            tag
+        )
+    elif backend == "aws_batch":
+        deploy_aws_batch(
             runtime_name,
             tag
         )

@@ -6,7 +6,6 @@ from tensei.benchmarks.benchmarks import (
 )
 from tensei.plotting.plotting import generate_plots
 from tensei.config import (
-    DEFAULT_TAG,
     PLOTS_DIR,
     RESULTS_DIR,
     Backend
@@ -112,7 +111,7 @@ def main():
     deploy_parser.add_argument(
         "--tag",
         type=str,
-        default=DEFAULT_TAG,
+        default=None,
         help="Optional tag for the runtime.",
     )
 
@@ -134,8 +133,8 @@ def main():
             f"\033[95m\033[1mRunning benchmark '{args.benchmark_name}' "
             f"with backend '{args.backend}'...\033[0m"
         )
-        results = run_benchmark(args.benchmark_name, args.backend)
-        print(f"\033[1;32m\033[1mBenchmark results: {results}\033[0m")
+        run_benchmark(args.benchmark_name, args.backend)
+        print(f"\033[1;32m\033[1mBenchmark finished\033[0m")
         # You might want to save these results to a file
     elif args.command == "run-all":
         print(

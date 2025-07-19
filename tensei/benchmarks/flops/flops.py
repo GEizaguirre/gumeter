@@ -22,11 +22,12 @@ from lithops import FunctionExecutor
 import pkg_resources
 
 from tensei.config import (
-    DEFAULT_MEMORY,
-    DEFAULT_TAG,
+    TENSEI_VERSION,
+    BACKEND_MEMORY,
     MAX_TASKS,
     RESULTS_DIR,
-    RUNTIME_NAMES
+    RUNTIME_NAMES,
+    TAGS
 )
 
 
@@ -47,7 +48,7 @@ def compute_flops(
 
     FLOPS = 2 * mat_n**3 * loopcount
 
-    print(DEFAULT_TAG)
+    print(TENSEI_VERSION)
 
     end = time.time()
 
@@ -58,7 +59,6 @@ def benchmark(
     backend: str,
     storage: str,
     workers: int = MAX_TASKS,
-    memory: int = DEFAULT_MEMORY,
     loopcount: int = 6,
     matn: int = 1024,
     debug: bool = False
@@ -66,15 +66,15 @@ def benchmark(
     iterable = [(loopcount, matn) for i in range(workers)]
     log_level = 'INFO' if not debug else 'DEBUG'
     runtime = RUNTIME_NAMES.get(backend)
-    tag = DEFAULT_TAG
-    print(backend)
-    print(storage)
+    tag = TAGS.get(backend)
+    memory = BACKEND_MEMORY.get(backend)
     fexec = FunctionExecutor(
         backend=backend,
         storage=storage,
         runtime_memory=memory,
         log_level=log_level,
         runtime=f"{runtime}:{tag}"
+        # runtime=None
     )
     start_time = time.time()
     worker_futures = fexec.map(
@@ -110,7 +110,6 @@ def run_flops(
     backend,
     storage,
     tasks: int = MAX_TASKS,
-    memory: int = DEFAULT_MEMORY,
     outdir: str = RESULTS_DIR,
 ):
     pass
@@ -118,10 +117,9 @@ def run_flops(
     res = benchmark(
         backend,
         storage,
-        tasks,
-        memory
+        tasks
     )
-    fname = f"flops_{backend}_{tasks}_{memory}.pickle"
+    fname = f"flops_{backend}_{tasks}.pickle"
     fdir = f"{outdir}/{fname}"
     pickle.dump(res, open(fdir, "wb"))
 
