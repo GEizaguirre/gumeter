@@ -137,7 +137,7 @@ def run_montecarlo_pi(
     if backend in DOCKER_BACKENDS:
         docker_username = get_docker_username_from_config()
         runtime = f"{docker_username}/{runtime}"
-    bucket = INPUT_BUCKET.get(backend, "gumeterr-data")
+    bucket = INPUT_BUCKET.get(backend, "gumeter-data")
 
     fexec = FunctionExecutor(
         backend=backend,
