@@ -1,14 +1,14 @@
 import os
 
-from tensei.config import (
+from gumeter.config import (
     BACKEND_STORAGE,
     RESULTS_DIR
 )
-from tensei.benchmarks.flops.flops import run_flops
-from tensei.benchmarks.terasort.terasort import run_terasort
-from tensei.benchmarks.mandelbrot.mandelbrot import run_mandelbrot
-from tensei.benchmarks.montecarlo_pi.montecarlo_pi import run_montecarlo_pi
-from tensei.benchmarks.montecarlo_stock.montecarlo_stock import (
+from gumeter.benchmarks.flops.flops import run_flops
+from gumeter.benchmarks.terasort.terasort import run_terasort
+from gumeter.benchmarks.mandelbrot.mandelbrot import run_mandelbrot
+from gumeter.benchmarks.montecarlo_pi.montecarlo_pi import run_montecarlo_pi
+from gumeter.benchmarks.montecarlo_stock.montecarlo_stock import (
     run_montecarlo_stock
 )
 

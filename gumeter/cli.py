@@ -1,23 +1,23 @@
 import argparse
 
-from tensei.benchmarks.benchmarks import (
+from gumeter.benchmarks.benchmarks import (
     run_benchmark,
     run_all_benchmarks
 )
-from tensei.plotting.plotting import generate_plots
-from tensei.config import (
+from gumeter.plotting.plotting import generate_plots
+from gumeter.config import (
     PLOTS_DIR,
     RESULTS_DIR,
     Backend
 )
-from tensei.runtime.runtime import deploy_runtime
-from tensei.backend.set_config import set_config
+from gumeter.runtime.runtime import deploy_runtime
+from gumeter.backend.set_config import set_config
 
 
 def main():
     parser = argparse.ArgumentParser(
         description=(
-            "Tensei: A benchmarking suite for",
+            "gumeter: A benchmarking suite for",
             "elastic serverless data analytics."
         )
     )

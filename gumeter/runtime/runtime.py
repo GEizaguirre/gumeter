@@ -2,9 +2,9 @@ import os
 import subprocess
 import sys
 
-from tensei.backend.aws_lambda import set_lithops_config_aws
-from tensei.backend.code_engine import get_docker_username_from_config
-from tensei.config import (
+from gumeter.backend.aws_lambda import set_lithops_config_aws
+from gumeter.backend.code_engine import get_docker_username_from_config
+from gumeter.config import (
     BACKEND_STORAGE,
     RUNTIME_NAMES,
     TAGS,
@@ -12,14 +12,14 @@ from tensei.config import (
 )
 
 
-def _create_tensei_zip():
+def _create_gumeter_zip():
 
-    print("Creating tensei.zip archive...")
-    zip_filename = "tensei.zip"
+    print("Creating gumeter.zip archive...")
+    zip_filename = "gumeter.zip"
     # Define patterns for files and directories to exclude from the zip
     exclude_patterns = [
-        "data/*", ".git/*", "tests/*", "tensei.egg-info/*", "runtime/*",
-        "venv/*", "tensei.zip", "test*", ".ipynb*", ".venv/*", "__pycache__/*",
+        "data/*", ".git/*", "tests/*", "gumeter.egg-info/*", "runtime/*",
+        "venv/*", "gumeter.zip", "test*", ".ipynb*", ".venv/*", "__pycache__/*",
         "*/__pycache__/*", "**/__pycache__/*", "*.egg-info/*", "*.egg",
         "*.whl", ".vscode/*", "build/*", "img/*", "benchmark_results/*",
         "plots/*"
@@ -27,7 +27,7 @@ def _create_tensei_zip():
 
     try:
         zip_command = [
-            "zip", "-r", "tensei.zip", "."
+            "zip", "-r", "gumeter.zip", "."
         ]
         for pattern in exclude_patterns:
             zip_command.extend(["-x", pattern])
@@ -91,7 +91,7 @@ def deploy_aws_lambda(
     tag: str = TAGS[Backend.AWS_LAMBDA.value]
 ):
 
-    print(f"Building AWS Lambda runtime for tensei: {runtime_name}:{tag}")
+    print(f"Building AWS Lambda runtime for gumeter: {runtime_name}:{tag}")
 
     set_lithops_config_aws()
 
@@ -107,7 +107,7 @@ def deploy_aws_lambda(
     _run_command(
         [
             "lithops", "runtime", "build",
-            "-f", "tensei/runtime/Dockerfile_lambda",
+            "-f", "gumeter/runtime/Dockerfile_lambda",
             "-b", "aws_lambda",
             f"{runtime_name}:{tag}",
             "--debug"
@@ -130,7 +130,7 @@ def deploy_aws_batch(
     tag: str = TAGS[Backend.AWS_BATCH.value]
 ):
 
-    print(f"Building AWS Batch runtime for tensei: {runtime_name}:{tag}")
+    print(f"Building AWS Batch runtime for gumeter: {runtime_name}:{tag}")
 
     set_lithops_config_aws()
 
@@ -146,7 +146,7 @@ def deploy_aws_batch(
     _run_command(
         [
             "lithops", "runtime", "build",
-            "-f", "tensei/runtime/Dockerfile_batch",
+            "-f", "gumeter/runtime/Dockerfile_batch",
             "-b", "aws_batch",
             f"{runtime_name}:{tag}",
             "--debug"
@@ -169,7 +169,7 @@ def deploy_code_engine(
     tag: str = TAGS[Backend.CODE_ENGINE.value]
 ):
 
-    print(f"Building AWS Code Engine runtime for tensei: {runtime_name}:{tag}")
+    print(f"Building AWS Code Engine runtime for gumeter: {runtime_name}:{tag}")
 
     docker_username = get_docker_username_from_config()
 
@@ -185,7 +185,7 @@ def deploy_code_engine(
     _run_command(
         [
             "lithops", "runtime", "build",
-            "-f", "tensei/runtime/Dockerfile_code_engine",
+            "-f", "gumeter/runtime/Dockerfile_code_engine",
             "-b", "code_engine",
             f"{docker_username}/{runtime_name}:{tag}",
             "--debug"
@@ -211,7 +211,7 @@ def deploy_cloudrun(
     tag: str = TAGS[Backend.GCP_CLOUDRUN.value]
 ):
 
-    print(f"Building GCP Cloud Run runtime for tensei: {runtime_name}:{tag}")
+    print(f"Building GCP Cloud Run runtime for gumeter: {runtime_name}:{tag}")
 
     _run_command(
         [
@@ -225,7 +225,7 @@ def deploy_cloudrun(
     _run_command(
         [
             "lithops", "runtime", "build",
-            "-f", "tensei/runtime/Dockerfile_cloudrun",
+            "-f", "gumeter/runtime/Dockerfile_cloudrun",
             "-b", "gcp_cloudrun",
             f"{runtime_name}:{tag}",
             "--debug"
@@ -257,7 +257,7 @@ def deploy_runtime(
     if tag is None:
         tag = TAGS.get(backend)
 
-    _create_tensei_zip()
+    _create_gumeter_zip()
 
     if backend == "aws_lambda":
         deploy_aws_lambda(
@@ -286,9 +286,9 @@ def deploy_runtime(
             "aws_lambda, aws_batch, code_engine, gcp_cloudrun."
         )
 
-    print("Cleaning up tensei.zip...")
+    print("Cleaning up gumeter.zip...")
     try:
-        os.remove("tensei.zip")
+        os.remove("gumeter.zip")
         print("Cleanup complete.")
     except OSError as e:
-        print(f"Error removing tensei.zip: {e}")
+        print(f"Error removing gumeter.zip: {e}")

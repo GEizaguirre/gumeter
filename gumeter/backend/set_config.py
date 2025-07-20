@@ -1,4 +1,4 @@
-from tensei.backend.aws_lambda import set_lithops_config_aws
+from gumeter.backend.aws_lambda import set_lithops_config_aws
 
 
 def set_config(backend: str):

@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-TENSEI_VERSION = 1.0
+gumeter_VERSION = 1.0
 
 DEFAULT_MEMORY = 1769  # in MB
 MAX_TASKS = 500
@@ -43,10 +43,10 @@ DISTRIBUTED_BACKENDS = [
 
 
 RUNTIME_NAMES = {
-    Backend.AWS_LAMBDA.value: "tensei-lambda-runtime",
-    Backend.AWS_BATCH.value: "tensei-batch-runtime",
-    Backend.CODE_ENGINE.value: "tensei-code-engine-runtime",
-    Backend.GCP_CLOUDRUN.value: "tensei-gcp-cloudrun-runtime"
+    Backend.AWS_LAMBDA.value: "gumeter-lambda-runtime",
+    Backend.AWS_BATCH.value: "gumeter-batch-runtime",
+    Backend.CODE_ENGINE.value: "gumeter-code-engine-runtime",
+    Backend.GCP_CLOUDRUN.value: "gumeter-gcp-cloudrun-runtime"
 }
 
 
@@ -71,5 +71,5 @@ DOCKER_BACKENDS = [
 ]
 
 INPUT_BUCKET = {
-    Backend.AWS_LAMBDA.value: 'tensei-data',
+    Backend.AWS_LAMBDA.value: 'gumeter-data',
 }

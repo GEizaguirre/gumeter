@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='tensei',
+    name='guemeter',
     version='0.1.0',
     packages=find_packages(),
     include_package_data=True,
@@ -14,17 +14,17 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'tensei=tensei.cli:main',
+            'gumeter=gumeter.cli:main',
         ],
     },
     author='Germán T. Eizaguirre',
     author_email='germantelmo.eizaguirre@urv.cat',
     description=(
-        'Tensei: A benchmarking suite for elastic serverless data analytics.'
+        'Gumeter: A benchmarking suite for serverless platform elasticity.'
     ),
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/GEizaguirre/tensei.git',
+    url='https://github.com/GEizaguirre/gumeter.git',
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',

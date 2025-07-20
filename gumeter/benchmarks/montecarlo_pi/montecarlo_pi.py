@@ -9,8 +9,8 @@ from lithops import (
 )
 import cloudpickle as pickle
 
-from tensei.backend.code_engine import get_docker_username_from_config
-from tensei.config import (
+from gumeter.backend.code_engine import get_docker_username_from_config
+from gumeter.config import (
     BACKEND_MEMORY,
     DOCKER_BACKENDS,
     INPUT_BUCKET,
@@ -18,7 +18,7 @@ from tensei.config import (
     RUNTIME_NAMES,
     TAGS
 )
-from tensei.utils import (
+from gumeter.utils import (
     get_fname_w_replica_num,
     remove_objects
 )
@@ -137,7 +137,7 @@ def run_montecarlo_pi(
     if backend in DOCKER_BACKENDS:
         docker_username = get_docker_username_from_config()
         runtime = f"{docker_username}/{runtime}"
-    bucket = INPUT_BUCKET.get(backend, "tensei-data")
+    bucket = INPUT_BUCKET.get(backend, "gumeterr-data")
 
     fexec = FunctionExecutor(
         backend=backend,

@@ -28,7 +28,7 @@ RUN pip install --upgrade setuptools six pip \
         google-auth \
         psutil
 
-# Tensei dependencies
+# gumeter dependencies
 RUN pip install --upgrade \
     pandas \
     scipy
@@ -43,11 +43,11 @@ WORKDIR $APP_HOME
 COPY lithops_cloudrun.zip .
 RUN unzip lithops_cloudrun.zip && rm lithops_cloudrun.zip
 
-COPY tensei.zip $APP_HOME
-RUN mkdir tensei-dir \
-    && mv tensei.zip tensei-dir \
-    && cd tensei-dir \
-    && unzip tensei.zip \
+COPY gumeter.zip $APP_HOME
+RUN mkdir gumeter-dir \
+    && mv gumeter.zip gumeter-dir \
+    && cd gumeter-dir \
+    && unzip gumeter.zip \
     && pip3 install -e . \
     && cd ..
 

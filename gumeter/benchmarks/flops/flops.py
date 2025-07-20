@@ -21,17 +21,17 @@ import pkg_resources
 
 from lithops import FunctionExecutor
 
-from tensei.config import (
+from gumeter.config import (
     DOCKER_BACKENDS,
-    TENSEI_VERSION,
+    gumeter_VERSION,
     BACKEND_MEMORY,
     MAX_TASKS,
     RESULTS_DIR,
     RUNTIME_NAMES,
     TAGS
 )
-from tensei.backend.code_engine import get_docker_username_from_config
-from tensei.utils import get_fname_w_replica_num
+from gumeter.backend.code_engine import get_docker_username_from_config
+from gumeter.utils import get_fname_w_replica_num
 
 
 def compute_flops(
@@ -51,7 +51,7 @@ def compute_flops(
 
     FLOPS = 2 * mat_n**3 * loopcount
 
-    print(TENSEI_VERSION)
+    print(gumeter_VERSION)
 
     end = time.time()
 

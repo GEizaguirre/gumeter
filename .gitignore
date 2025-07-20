@@ -180,7 +180,7 @@ cython_debug/
 benchmark_results/
 
 # Runtime deployment
-tensei.zip
+gumeter.zip
 
 # Development
 test_lithops.py

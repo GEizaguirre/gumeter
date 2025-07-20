@@ -38,7 +38,7 @@ RUN pip install --upgrade --ignore-installed pip wheel six setuptools \
         tblib \
         psutil
 
-# Tensei dependencies
+# gumeter dependencies
 RUN pip install --upgrade \
     pandas \
     scipy
@@ -56,11 +56,11 @@ RUN unzip lithops_lambda.zip \
 
 # Put your dependencies here, using RUN pip install... or RUN apt install...
 
-COPY tensei.zip ${FUNCTION_DIR}
-RUN mkdir tensei-dir \
-    && mv tensei.zip tensei-dir \
-    && cd tensei-dir \
-    && unzip tensei.zip \
+COPY gumeter.zip ${FUNCTION_DIR}
+RUN mkdir gumeter-dir \
+    && mv gumeter.zip gumeter-dir \
+    && cd gumeter-dir \
+    && unzip gumeter.zip \
     && pip3 install -e . \
     && cd ..
 

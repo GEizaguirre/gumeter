@@ -33,7 +33,7 @@ RUN pip install --upgrade \
     kubernetes \
     ibm-vpc
 
-# Tensei dependencies
+# gumeter dependencies
 RUN pip install --upgrade \
     pandas \
     scipy
@@ -50,11 +50,11 @@ WORKDIR $APP_HOME
 COPY lithops_codeengine.zip .
 RUN unzip lithops_codeengine.zip && rm lithops_codeengine.zip
 
-COPY tensei.zip $APP_HOME
-RUN mkdir tensei-dir \
-    && mv tensei.zip tensei-dir \
-    && cd tensei-dir \
-    && unzip tensei.zip \
+COPY gumeter.zip $APP_HOME
+RUN mkdir gumeter-dir \
+    && mv gumeter.zip gumeter-dir \
+    && cd gumeter-dir \
+    && unzip gumeter.zip \
     && pip3 install -e . \
     && cd ..
 
