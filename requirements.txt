@@ -4,3 +4,4 @@ lithops
 lithops[aws]
 lithops[ibm]
 lithops[gcp]
+scipy

@@ -30,7 +30,8 @@ RUN pip install --upgrade setuptools six pip \
 
 # Tensei dependencies
 RUN pip install --upgrade \
-    pandas
+    pandas \
+    scipy
 
 ENV CONCURRENCY 1
 ENV TIMEOUT 600

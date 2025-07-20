@@ -8,6 +8,9 @@ from tensei.benchmarks.flops.flops import run_flops
 from tensei.benchmarks.terasort.terasort import run_terasort
 from tensei.benchmarks.mandelbrot.mandelbrot import run_mandelbrot
 from tensei.benchmarks.montecarlo_pi.montecarlo_pi import run_montecarlo_pi
+from tensei.benchmarks.montecarlo_stock.montecarlo_stock import (
+    run_montecarlo_stock
+)
 
 
 def run_benchmark(
@@ -47,6 +50,12 @@ def run_benchmark(
                 storage=storage,
                 outdir=out_dir
             )
+        elif benchmark_name == "montecarlo_stock":
+            run_montecarlo_stock(
+                backend=backend,
+                storage=storage,
+                outdir=out_dir
+            )
 
 
 def run_all_benchmarks(
@@ -74,6 +83,12 @@ def run_all_benchmarks(
     )
     run_benchmark(
         "montecarlo_pi",
+        backend,
+        out_dir,
+        num_replicas
+    )
+    run_benchmark(
+        "montecarlo_stock",
         backend,
         out_dir,
         num_replicas

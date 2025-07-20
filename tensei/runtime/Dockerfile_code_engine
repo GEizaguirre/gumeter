@@ -35,7 +35,8 @@ RUN pip install --upgrade \
 
 # Tensei dependencies
 RUN pip install --upgrade \
-    pandas
+    pandas \
+    scipy
 
 ENV PORT 8080
 ENV CONCURRENCY 1
