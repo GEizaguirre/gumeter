@@ -33,7 +33,7 @@ base = range_per_char + 1
 FILE_NAME = "terasort-5g"
 PARTITION_PREFIX = "intermediate_terasort/"
 OUTPUT_PREFIX = "out_terasort/"
-NUM_TASKS = 50
+NUM_TASKS = 100
 
 
 def get_read_range(
@@ -325,7 +325,7 @@ def run_terasort(
             "num_reducers": num_tasks,
             "partition_prefix": PARTITION_PREFIX
         }
-        for mapper_id in range(num_tasks)
+        for mapper_id in range(num_tasks // 2)
     ]
     reducer_args = [
         {
