@@ -31,14 +31,17 @@ def _create_tensei_zip():
         ]
         for pattern in exclude_patterns:
             zip_command.extend(["-x", pattern])
-        _run_command(zip_command)
+        _run_command(
+            zip_command,
+            out=False
+        )
         print(f"'{zip_filename}' created successfully.")
     except Exception as e:
         print(f"Error creating zip file: {e}")
         sys.exit(1)
 
 
-def _run_command(command: list, cwd: str = None):
+def _run_command(command: list, cwd: str = None, out=True):
 
     print(f"Executing command: {' '.join(command)}")
     try:
@@ -54,8 +57,8 @@ def _run_command(command: list, cwd: str = None):
             output = process.stdout.readline()
             if output == '' and process.poll() is not None:
                 break
-            # if output:
-            #     print(output, end='')
+            if out and output:
+                print(output, end='')
         stderr = process.stderr.read()
         if stderr:
             print(f"Stderr: {stderr}")
@@ -203,6 +206,46 @@ def deploy_code_engine(
     )
 
 
+def deploy_cloudrun(
+    runtime_name: str = RUNTIME_NAMES[Backend.GCP_CLOUDRUN.value],
+    tag: str = TAGS[Backend.GCP_CLOUDRUN.value]
+):
+
+    print(f"Building GCP Cloud Run runtime for tensei: {runtime_name}:{tag}")
+
+    _run_command(
+        [
+            "lithops", "runtime", "delete",
+            "-b", "gcp_cloudrun",
+            "-s", BACKEND_STORAGE["gcp_cloudrun"],
+            f"{runtime_name}:{tag}",
+            "--debug"
+        ]
+    )
+    _run_command(
+        [
+            "lithops", "runtime", "build",
+            "-f", "tensei/runtime/Dockerfile_cloudrun",
+            "-b", "gcp_cloudrun",
+            f"{runtime_name}:{tag}",
+            "--debug"
+        ]
+    )
+    _run_command(
+        [
+            "lithops", "runtime", "update",
+            "-b", "gcp_cloudrun",
+            "-s", BACKEND_STORAGE["gcp_cloudrun"],
+            f"{runtime_name}:{tag}",
+            "--debug"
+        ]
+    )
+    print(
+        f"GCP Cloud Run runtime '{runtime_name}:{tag}'",
+        "deployment complete."
+    )
+
+
 def deploy_runtime(
     backend: str,
     runtime_name: str = None,
@@ -230,6 +273,17 @@ def deploy_runtime(
         deploy_code_engine(
             runtime_name,
             tag
+        )
+    elif backend == "gcp_cloudrun":
+        deploy_cloudrun(
+            runtime_name,
+            tag
+        )
+    else:
+        raise ValueError(
+            f"Unsupported backend: {backend}. "
+            "Supported backends are:"
+            "aws_lambda, aws_batch, code_engine, gcp_cloudrun."
         )
 
     print("Cleaning up tensei.zip...")

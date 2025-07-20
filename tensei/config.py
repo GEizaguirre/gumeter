@@ -13,12 +13,14 @@ class Backend(Enum):
     AWS_LAMBDA = "aws_lambda"
     AWS_BATCH = "aws_batch"
     CODE_ENGINE = "code_engine"
+    GCP_CLOUDRUN = "gcp_cloudrun"
     LOCALHOST = "localhost"
 
 
 class StorageBackend(Enum):
     AWS_S3 = "aws_s3"
     IBM_COS = "ibm_cos"
+    GCP_STORAGE = "gcp_storage"
     MINIO = "minio"
 
 
@@ -27,6 +29,7 @@ BACKEND_STORAGE = {
     Backend.AWS_LAMBDA.value: StorageBackend.AWS_S3.value,
     Backend.AWS_BATCH.value: StorageBackend.AWS_S3.value,
     Backend.CODE_ENGINE.value: StorageBackend.IBM_COS.value,
+    Backend.GCP_CLOUDRUN.value: StorageBackend.GCP_STORAGE.value,
     Backend.LOCALHOST.value: StorageBackend.MINIO.value
 }
 
@@ -34,21 +37,24 @@ BACKEND_STORAGE = {
 DISTRIBUTED_BACKENDS = [
     Backend.AWS_LAMBDA,
     Backend.AWS_BATCH,
-    Backend.CODE_ENGINE
+    Backend.CODE_ENGINE,
+    Backend.GCP_CLOUDRUN
 ]
 
 
 RUNTIME_NAMES = {
     Backend.AWS_LAMBDA.value: "tensei-lambda-runtime",
     Backend.AWS_BATCH.value: "tensei-batch-runtime",
-    Backend.CODE_ENGINE.value: "tensei-code-engine-runtime"
+    Backend.CODE_ENGINE.value: "tensei-code-engine-runtime",
+    Backend.GCP_CLOUDRUN.value: "tensei-gcp-cloudrun-runtime"
 }
 
 
 TAGS = {
     Backend.AWS_LAMBDA.value: "1.0",
     Backend.AWS_BATCH.value: "1",
-    Backend.CODE_ENGINE.value: "1"
+    Backend.CODE_ENGINE.value: "1",
+    Backend.GCP_CLOUDRUN.value: "1"
 }
 
 
@@ -56,6 +62,7 @@ BACKEND_MEMORY = {
     Backend.AWS_LAMBDA.value: 1769,
     Backend.AWS_BATCH.value: 2048,
     Backend.CODE_ENGINE.value: 2048,
+    Backend.GCP_CLOUDRUN.value: 2048,
     Backend.LOCALHOST.value: 2048
 }
 

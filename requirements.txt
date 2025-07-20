@@ -3,3 +3,4 @@ matplotlib
 lithops
 lithops[aws]
 lithops[ibm]
+lithops[gcp]
