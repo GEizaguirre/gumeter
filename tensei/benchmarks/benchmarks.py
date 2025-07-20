@@ -6,6 +6,7 @@ from tensei.config import (
 )
 from tensei.benchmarks.flops.flops import run_flops
 from tensei.benchmarks.terasort.terasort import run_terasort
+from tensei.benchmarks.mandelbrot.mandelbrot import run_mandelbrot
 
 
 def run_benchmark(
@@ -28,7 +29,13 @@ def run_benchmark(
                 outdir=out_dir
             )
         elif benchmark_name == "terasort":
-            run_terasort(   
+            run_terasort(
+                backend=backend,
+                storage=storage,
+                outdir=out_dir
+            )
+        elif benchmark_name == "mandelbrot":
+            run_mandelbrot(
                 backend=backend,
                 storage=storage,
                 outdir=out_dir

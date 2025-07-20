@@ -1,4 +1,3 @@
-import os
 import time
 from typing import (
     Dict,
@@ -21,7 +20,11 @@ from tensei.config import (
     RUNTIME_NAMES,
     TAGS
 )
-from tensei.utils import get_fname_w_replica_num, remove_objects
+from tensei.utils import (
+    get_fname_w_replica_num,
+    remove_objects
+)
+
 
 MIN_CHAR_ASCII = 32
 MAX_CHAR_ASCII = 126
