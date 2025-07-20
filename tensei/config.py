@@ -4,7 +4,7 @@ from enum import Enum
 TENSEI_VERSION = 1.0
 
 DEFAULT_MEMORY = 1769  # in MB
-MAX_TASKS = 1
+MAX_TASKS = 500
 PLOTS_DIR = "plots"
 RESULTS_DIR = "benchmark_results"
 
@@ -69,3 +69,7 @@ BACKEND_MEMORY = {
 DOCKER_BACKENDS = [
     Backend.CODE_ENGINE.value
 ]
+
+INPUT_BUCKET = {
+    Backend.AWS_LAMBDA.value: 'tensei-data',
+}

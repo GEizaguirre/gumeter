@@ -33,6 +33,10 @@ RUN pip install --upgrade \
     kubernetes \
     ibm-vpc
 
+# Tensei dependencies
+RUN pip install --upgrade \
+    pandas
+
 ENV PORT 8080
 ENV CONCURRENCY 1
 ENV TIMEOUT 600

@@ -49,6 +49,12 @@ def main():
         default=RESULTS_DIR,
         help="Directory to save the generated plots.",
     )
+    run_parser.add_argument(
+        "--num-replicas",
+        type=int,
+        default=1,
+        help="Number of replicas to run for the benchmark.",
+    )
 
     # --- Run all benchmarks ---
     run_all_parser = subparsers.add_parser(
@@ -66,6 +72,12 @@ def main():
         type=str,
         default=RESULTS_DIR,
         help="Directory to save the generated plots.",
+    )
+    run_all_parser.add_argument(
+        "--num-replicas",
+        type=int,
+        default=1,
+        help="Number of replicas to run for each benchmark.",
     )
 
     # --- Get plots ---
@@ -133,7 +145,11 @@ def main():
             f"\033[95m\033[1mRunning benchmark '{args.benchmark_name}' "
             f"with backend '{args.backend}'...\033[0m"
         )
-        run_benchmark(args.benchmark_name, args.backend)
+        run_benchmark(
+            args.benchmark_name,
+            args.backend,
+            num_replicas=args.num_replicas
+        )
         print(
             f"\033[1;32m\033[1mBenchmark {args.benchmark_name}",
             "finished\033[0m"
@@ -144,7 +160,10 @@ def main():
             "\033[95m\033[1mRunning all benchmarks with backend "
             f"'{args.backend}'...\033[0m"
         )
-        all_results = run_all_benchmarks(args.backend)
+        all_results = run_all_benchmarks(
+            args.backend,
+            num_replicas=args.num_replicas
+        )
         print(
             "\033[1;32m\033[1mAll benchmark results:",
             f"{all_results}\033[0m"

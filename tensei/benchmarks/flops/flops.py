@@ -15,7 +15,7 @@
 #
 
 import time
-import pickle
+import json
 import numpy as np
 import pkg_resources
 
@@ -31,6 +31,7 @@ from tensei.config import (
     TAGS
 )
 from tensei.backend.code_engine import get_docker_username_from_config
+from tensei.utils import get_fname_w_replica_num
 
 
 def compute_flops(
@@ -61,7 +62,7 @@ def benchmark(
     backend: str,
     storage: str,
     workers: int = MAX_TASKS,
-    loopcount: int = 6,
+    loopcount: int = 10,
     matn: int = 1024,
     debug: bool = False
 ):
@@ -114,7 +115,7 @@ def benchmark(
 def run_flops(
     backend,
     storage,
-    tasks: int = MAX_TASKS,
+    tasks: int = 1000,
     outdir: str = RESULTS_DIR,
 ):
     pass
@@ -124,9 +125,15 @@ def run_flops(
         storage,
         tasks
     )
-    fname = f"flops_{backend}_{tasks}.pickle"
+    fname = f"flops_{backend}.json"
     fdir = f"{outdir}/{fname}"
-    pickle.dump(res, open(fdir, "wb"))
+    fdir = get_fname_w_replica_num(
+        fname=fdir
+    )
+    json.dump(
+        res,
+        open(fdir, "w")
+    )
 
 
 if __name__ == "__main__":

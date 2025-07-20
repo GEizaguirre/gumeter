@@ -38,6 +38,9 @@ RUN pip install --upgrade --ignore-installed pip wheel six setuptools \
         tblib \
         psutil
 
+# Tensei dependencies
+RUN pip install --upgrade \
+    pandas
 
 # Set working directory to function root directory
 WORKDIR ${FUNCTION_DIR}

@@ -28,6 +28,10 @@ RUN pip install --upgrade setuptools six pip \
         google-auth \
         psutil
 
+# Tensei dependencies
+RUN pip install --upgrade \
+    pandas
+
 ENV CONCURRENCY 1
 ENV TIMEOUT 600
 
