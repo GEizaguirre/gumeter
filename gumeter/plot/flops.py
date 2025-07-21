@@ -58,7 +58,7 @@ def create_total_gflops_plot(
         results_by_endtime.rolling_flops_rate/1e9,
         label='Effective',
         linewidth=3,
-        color="#FCA714"  # pastel dark green
+        color="#87D033"  # pastel dark green
     )
     ax.set_xlabel('Execution Time (s)', fontsize=18)
     if show_flops_rate:

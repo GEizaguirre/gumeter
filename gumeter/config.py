@@ -74,3 +74,11 @@ DOCKER_BACKENDS = [
 INPUT_BUCKET = {
     Backend.AWS_LAMBDA.value: 'gumeter-data',
 }
+
+BACKEND_STRING = {
+    Backend.AWS_LAMBDA.value: "AWS Lambda",
+    Backend.AWS_BATCH.value: "AWS Batch",
+    Backend.CODE_ENGINE.value: "IBM Code Engine",
+    Backend.GCP_CLOUDRUN.value: "GCP Cloud Run",
+    Backend.LOCALHOST.value: "Localhost"
+}
