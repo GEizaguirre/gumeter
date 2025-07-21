@@ -8,7 +8,8 @@ from gumeter.config import (
     MAX_TASKS,
     RUNTIME_NAMES,
     TAGS,
-    BACKEND_STORAGE
+    BACKEND_STORAGE,
+    Backend
 )
 
 
@@ -43,4 +44,4 @@ def run_warm_up(
             mock,
             list(range(MAX_TASKS))
         )
-        wait(futures)
+        fexec.wait(futures)

@@ -5,7 +5,10 @@ from typing import (
     Tuple
 )
 
-from lithops import FunctionExecutor, Storage
+from lithops import (
+    FunctionExecutor,
+    Storage
+)
 import pandas as pd
 import numpy as np
 import pickle
@@ -210,7 +213,7 @@ def read_partitions(
 
     partition_list = []
     for mapper_id in range(num_mappers):
-        key = f"{partition_prefix}_mapper_{mapper_id}_part_{reducer_id}.pkl"
+        key = f"{partition_prefix}mapper_{mapper_id}_part_{reducer_id}.pkl"
         partition_data = storage.get_object(
             bucket=bucket,
             key=key
@@ -315,23 +318,24 @@ def run_terasort(
         key=FILE_NAME
     )['content-length'])
 
+    num_mappers = num_tasks // 2
     mapper_args = [
         {
             "bucket": bucket,
             "key": FILE_NAME,
             "data_size": data_size,
             "mapper_id": mapper_id,
-            "num_mappers": num_tasks,
+            "num_mappers": num_mappers,
             "num_reducers": num_tasks,
             "partition_prefix": PARTITION_PREFIX
         }
-        for mapper_id in range(num_tasks // 2)
+        for mapper_id in range(num_mappers)
     ]
     reducer_args = [
         {
             "bucket": bucket,
             "partition_prefix": PARTITION_PREFIX,
-            "num_mappers": num_tasks,
+            "num_mappers": num_mappers,
             "reducer_id": reducer_id,
             "out_prefix": OUTPUT_PREFIX
         }
@@ -364,7 +368,9 @@ def run_terasort(
         reducer,
         reducer_args
     )
-    fexec.wait(reducer_futures)
+    fexec.wait(
+        reducer_futures
+    )
     reducer_stats = [f.stats for f in reducer_futures if not f.error]
     results["stage1"] = reducer_stats
 
@@ -376,6 +382,7 @@ def run_terasort(
         fname=fdir
     )
     json.dump(results, open(fdir, "w"))
+    print(f"Results saved to {fdir}")
 
     remove_objects(
         storage=fexec.storage,

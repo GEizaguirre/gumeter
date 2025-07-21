@@ -57,7 +57,7 @@ def benchmark(
     workers: int = MAX_TASKS,
     loopcount: int = 10,
     matn: int = 1024,
-    debug: bool = True
+    debug: bool = False
 ):
     iterable = [(loopcount, matn) for i in range(workers)]
     log_level = 'INFO' if not debug else 'DEBUG'
@@ -127,6 +127,8 @@ def run_flops(
         res,
         open(fdir, "w")
     )
+    print(f"Results saved to {fdir}")
+
 
 
 if __name__ == "__main__":

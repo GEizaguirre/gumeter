@@ -309,3 +309,4 @@ def run_mandelbrot(
         results,
         open(fdir, "w")
     )
+    print(f"Results saved to {fdir}")

@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.lines import Line2D
 
-T = 10 
+T = 10
 t = np.linspace(0, 5, 1000)
 
-peaks = [ 1000, 400, 700, 200]
+peaks = [1000, 400, 700, 200]
 peak_times = [0.5, 1.5, 2.5, 4.0]
 peak_intervals = [0.5, 0.5, 1.0, 0.5]
 wait = 0.25
@@ -14,18 +14,18 @@ wait = 0.25
 
 def smooth_cr(t, peaks, peak_times, peak_intervals, wait):
     n = len(peaks)
-    
+
     for i in range(n):
         start_time = peak_times[i]
         end_time = peak_times[i] + peak_intervals[i]
-        
+
         if start_time <= t < end_time:
 
             if t < end_time:
                 return peaks[i]  # Abruptly reach maximum and stay for the wait time
             else:
                 return 1 + (peaks[i] - 1) * np.exp(-25 * (t - end_time))  # Exponential decay after wait
-        
+
     return 1
 
 Cr = np.array([smooth_cr(time, peaks, peak_times, peak_intervals, wait) for time in t])
@@ -46,6 +46,7 @@ print(integral)
 plt.rcParams["font.size"] = 18
 plt.rcParams["axes.linewidth"] = 1.5  # Thicker axes lines
 plt.rcParams["lines.linewidth"] = 3  # Thicker plot lines
+plt.rcParams["font.family"] = "serif"
 
 # Define time array and example data (replace with your actual data)
 t = np.linspace(0, 5, 1000)

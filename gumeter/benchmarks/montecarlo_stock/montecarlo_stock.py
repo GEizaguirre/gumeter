@@ -172,6 +172,7 @@ def run_montecarlo_stock(
         results,
         open(fdir, "w")
     )
+    print(f"Results saved to {fdir}")
 
     remove_objects(
         storage=fexec.storage,
