@@ -10,7 +10,6 @@ if __name__ == "__main__":
     results_dir = "benchmark_results"
 
     benchmarks = [ "montecarlo_stock", "montecarlo_pi", "terasort", "mandelbrot" ]
-    # benchmarks = ["montecarlo_stock"]
 
     for bch_i, benchmark in enumerate(benchmarks):
         backend_dict = {}
