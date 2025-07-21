@@ -46,7 +46,7 @@ print(integral)
 plt.rcParams["font.size"] = 18
 plt.rcParams["axes.linewidth"] = 1.5  # Thicker axes lines
 plt.rcParams["lines.linewidth"] = 3  # Thicker plot lines
-plt.rcParams["font.family"] = "serif"
+# plt.rcParams["font.family"] = "serif"
 
 # Define time array and example data (replace with your actual data)
 t = np.linspace(0, 5, 1000)
@@ -131,7 +131,7 @@ with PdfPages('elasticity_burst.pdf') as pdf:
     plt.legend(
         handles=[h1,h2, h3],
         labels=['Required', 'Provided', 'Stiffness'],
-        loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=3, fontsize=18, frameon=False)
+        loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=3, fontsize=16, frameon=False)
 
     plt.gca().spines['top'].set_visible(False)
     plt.gca().spines['right'].set_visible(False)

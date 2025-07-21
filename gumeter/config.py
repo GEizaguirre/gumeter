@@ -37,8 +37,8 @@ BACKEND_STORAGE = {
 DISTRIBUTED_BACKENDS = [
     Backend.AWS_LAMBDA,
     Backend.AWS_BATCH,
-    Backend.CODE_ENGINE,
-    Backend.GCP_CLOUDRUN
+    Backend.GCP_CLOUDRUN,
+    Backend.CODE_ENGINE
 ]
 
 
