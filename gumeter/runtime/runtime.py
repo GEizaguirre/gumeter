@@ -19,10 +19,10 @@ def _create_gumeter_zip():
     # Define patterns for files and directories to exclude from the zip
     exclude_patterns = [
         "data/*", ".git/*", "tests/*", "gumeter.egg-info/*", "runtime/*",
-        "venv/*", "gumeter.zip", "test*", ".ipynb*", ".venv/*", "__pycache__/*",
-        "*/__pycache__/*", "**/__pycache__/*", "*.egg-info/*", "*.egg",
-        "*.whl", ".vscode/*", "build/*", "img/*", "benchmark_results/*",
-        "plots/*"
+        "venv/*", "gumeter.zip", "test*", ".ipynb*", ".venv/*",
+        "__pycache__/*", "*/__pycache__/*", "**/__pycache__/*", "*.egg-info/*",
+        "*.egg", "*.whl", ".vscode/*", "build/*", "img/*",
+        "benchmark_results/*", "plots/*"
     ]
 
     try:
@@ -169,7 +169,10 @@ def deploy_code_engine(
     tag: str = TAGS[Backend.CODE_ENGINE.value]
 ):
 
-    print(f"Building AWS Code Engine runtime for gumeter: {runtime_name}:{tag}")
+    print(
+        "Building AWS Code Engine runtime for gumeter:",
+        f"{runtime_name}:{tag}"
+    )
 
     docker_username = get_docker_username_from_config()
 
@@ -240,6 +243,7 @@ def deploy_cloudrun(
             "--debug"
         ]
     )
+
     print(
         f"GCP Cloud Run runtime '{runtime_name}:{tag}'",
         "deployment complete."
@@ -254,6 +258,7 @@ def deploy_runtime(
 
     if runtime_name is None:
         runtime_name = RUNTIME_NAMES.get(backend)
+
     if tag is None:
         tag = TAGS.get(backend)
 

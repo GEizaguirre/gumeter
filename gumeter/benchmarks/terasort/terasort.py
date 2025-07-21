@@ -352,6 +352,14 @@ def run_terasort(
 
     print("Stage 0 completed, starting Stage 1...")
 
+    fexec = FunctionExecutor(
+        backend=backend,
+        storage=storage,
+        runtime_memory=memory,
+        log_level=log_level,
+        runtime=runtime
+    )
+
     reducer_futures = fexec.map(
         reducer,
         reducer_args

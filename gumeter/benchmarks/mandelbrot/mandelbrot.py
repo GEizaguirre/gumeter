@@ -9,7 +9,6 @@ from gumeter.backend.code_engine import get_docker_username_from_config
 from gumeter.config import (
     BACKEND_MEMORY,
     DOCKER_BACKENDS,
-    INPUT_BUCKET,
     RESULTS_DIR,
     RUNTIME_NAMES,
     TAGS
@@ -24,7 +23,11 @@ YTARGET = 0.1318259042
 
 
 def parallel_mandelbrot(
-    executor: FunctionExecutor,
+    backend,
+    storage,
+    runtime_memory,
+    log_level,
+    runtime,
     xmin,
     xmax,
     ymin,
@@ -36,7 +39,7 @@ def parallel_mandelbrot(
 ):
 
     blocks_per_row = sqrt(concurrency)
-    assert blocks_per_row == int(blocks_per_row), "concurrency must be square number"
+    assert blocks_per_row == int(blocks_per_row), "concurrency must be square"
     blocks_per_row = int(blocks_per_row)
     y_step = (ymax - ymin) / blocks_per_row
     x_step = (xmax - xmin) / blocks_per_row
@@ -46,15 +49,17 @@ def parallel_mandelbrot(
     indexes = []
     for i in range(blocks_per_row):
         for j in range(blocks_per_row):
-            limits.append((xmin + i*x_step, xmin + (i + 1)*x_step,
-                            ymin + j*y_step, ymin + (j + 1)*y_step))
+            limits.append((
+                xmin + i*x_step, xmin + (i + 1)*x_step,
+                ymin + j*y_step, ymin + (j + 1)*y_step
+            ))
             indexes.append((i*mat_block_sz, (i + 1)*mat_block_sz,
                             j*mat_block_sz, (j + 1)*mat_block_sz))
 
     def mandelbrot_chunk_fn(limit, maxiter):
         rx = np.linspace(limit[0], limit[1], mat_block_sz)
         ry = np.linspace(limit[2], limit[3], mat_block_sz)
-        c = rx + ry[:,None]*1j
+        c = rx + ry[:, None]*1j
         output = np.zeros((mat_block_sz, mat_block_sz))
         z = np.zeros((mat_block_sz, mat_block_sz), np.complex64)
 
@@ -72,6 +77,13 @@ def parallel_mandelbrot(
         } for limit in limits
     ]
 
+    executor = FunctionExecutor(
+        backend=backend,
+        storage=storage,
+        runtime_memory=runtime_memory,
+        log_level=log_level,
+        runtime=runtime
+    )
     futures = executor.map(
         mandelbrot_chunk_fn,
         iterdata
@@ -101,15 +113,6 @@ def run_mandelbrot(
     if backend in DOCKER_BACKENDS:
         docker_username = get_docker_username_from_config()
         runtime = f"{docker_username}/{runtime}"
-    bucket = INPUT_BUCKET.get(backend, "gumeter-data")
-
-    fexec = FunctionExecutor(
-        backend=backend,
-        storage=storage,
-        runtime_memory=memory,
-        log_level=log_level,
-        runtime=runtime
-    )
 
     results = {}
     results["start_time"] = time.time()
@@ -121,9 +124,13 @@ def run_mandelbrot(
     ymin = YTARGET - delta
     ymax = YTARGET + delta
     maxiter = MAXITER
-    concurrency = 4**2
+    concurrency = 3**2
     worker_stats = parallel_mandelbrot(
-        fexec,
+        backend,
+        storage,
+        memory,
+        log_level,
+        runtime,
         xmin,
         xmax,
         ymin,
@@ -142,9 +149,13 @@ def run_mandelbrot(
     xmax = XTARGET + delta
     ymin = YTARGET - delta
     ymax = YTARGET + delta
-    concurrency = 6**2
+    concurrency = 5**2
     worker_stats = parallel_mandelbrot(
-        fexec,
+        backend,
+        storage,
+        memory,
+        log_level,
+        runtime,
         xmin,
         xmax,
         ymin,
@@ -164,9 +175,13 @@ def run_mandelbrot(
     ymin = YTARGET - delta
     ymax = YTARGET + delta
     maxiter += 30
-    concurrency = 8**2
+    concurrency = 7**2
     worker_stats = parallel_mandelbrot(
-        fexec,
+        backend,
+        storage,
+        memory,
+        log_level,
+        runtime,
         xmin,
         xmax,
         ymin,
@@ -186,9 +201,13 @@ def run_mandelbrot(
     ymin = YTARGET - delta
     ymax = YTARGET + delta
     maxiter += 30
-    concurrency = 10**2
+    concurrency = 9**2
     worker_stats = parallel_mandelbrot(
-        fexec,
+        backend,
+        storage,
+        memory,
+        log_level,
+        runtime,
         xmin,
         xmax,
         ymin,
@@ -208,9 +227,13 @@ def run_mandelbrot(
     ymin = YTARGET - delta
     ymax = YTARGET + delta
     maxiter += 40
-    concurrency = 12**2
+    concurrency = 10**2
     worker_stats = parallel_mandelbrot(
-        fexec,
+        backend,
+        storage,
+        memory,
+        log_level,
+        runtime,
         xmin,
         xmax,
         ymin,
@@ -230,9 +253,13 @@ def run_mandelbrot(
     ymin = YTARGET - delta
     ymax = YTARGET + delta
     maxiter += 40
-    concurrency = 14**2
+    concurrency = 12**2
     worker_stats = parallel_mandelbrot(
-        fexec,
+        backend,
+        storage,
+        memory,
+        log_level,
+        runtime,
         xmin,
         xmax,
         ymin,
@@ -252,9 +279,13 @@ def run_mandelbrot(
     ymin = YTARGET - delta
     ymax = YTARGET + delta
     maxiter = 500
-    concurrency = 16**2
+    concurrency = 14**2
     worker_stats = parallel_mandelbrot(
-        fexec,
+        backend,
+        storage,
+        memory,
+        log_level,
+        runtime,
         xmin,
         xmax,
         ymin,

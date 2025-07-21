@@ -17,13 +17,11 @@
 import time
 import json
 import numpy as np
-import pkg_resources
 
 from lithops import FunctionExecutor
 
 from gumeter.config import (
     DOCKER_BACKENDS,
-    gumeter_VERSION,
     BACKEND_MEMORY,
     MAX_TASKS,
     RESULTS_DIR,
@@ -38,9 +36,6 @@ def compute_flops(
     loopcount,
     mat_n
 ):
-    installed_packages = pkg_resources.working_set
-    for pkg in installed_packages:
-        print(pkg.project_name)
 
     A = np.arange(mat_n**2, dtype=np.float64).reshape(mat_n, mat_n)
     B = np.arange(mat_n**2, dtype=np.float64).reshape(mat_n, mat_n)
@@ -50,8 +45,6 @@ def compute_flops(
         _ = np.sum(np.dot(A, B))
 
     FLOPS = 2 * mat_n**3 * loopcount
-
-    print(gumeter_VERSION)
 
     end = time.time()
 
@@ -64,7 +57,7 @@ def benchmark(
     workers: int = MAX_TASKS,
     loopcount: int = 10,
     matn: int = 1024,
-    debug: bool = False
+    debug: bool = True
 ):
     iterable = [(loopcount, matn) for i in range(workers)]
     log_level = 'INFO' if not debug else 'DEBUG'
@@ -115,7 +108,7 @@ def benchmark(
 def run_flops(
     backend,
     storage,
-    tasks: int = 1000,
+    tasks: int = MAX_TASKS,
     outdir: str = RESULTS_DIR,
 ):
     pass

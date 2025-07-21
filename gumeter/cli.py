@@ -4,6 +4,7 @@ from gumeter.benchmarks.benchmarks import (
     run_benchmark,
     run_all_benchmarks
 )
+from gumeter.benchmarks.warm_up import run_warm_up
 from gumeter.plotting.plotting import generate_plots
 from gumeter.config import (
     PLOTS_DIR,
@@ -127,6 +128,17 @@ def main():
         help="Optional tag for the runtime.",
     )
 
+    # --- Warm up backend ---
+    warmup_parser = subparsers.add_parser(
+        "warmup", help="Warm up a specific backend."
+    )
+    warmup_parser.add_argument(
+        "backend",
+        type=str,
+        choices=[b.value for b in Backend],
+        help="Backend to warm up.",
+    )
+
     # --- Set backend config ---
     config_parser = subparsers.add_parser(
         "set-config", help="Set configuration for a backend."
@@ -186,6 +198,10 @@ def main():
         print(
             f"\033[1;32m\033[1mConfiguration for '{args.backend}' set.\033[0m"
         )
+    elif args.command == "warmup":
+        print(f"\033[95m\033[1mWarming up backend '{args.backend}'...\033[0m")
+        run_warm_up(args.backend)
+        print(f"\033[1;32m\033[1mBackend '{args.backend}' warmed up.\033[0m")
     else:
         parser.print_help()
 
