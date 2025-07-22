@@ -57,18 +57,19 @@ if __name__ == "__main__":
         stds.append(stds_row)
 
     means = np.array(means)
+    print(means)
     stds = np.array(stds)
 
     x = np.arange(len(benchmarks_list))
     width = 0.15
 
-    fig, ax = plt.subplots(figsize=(10, 4))
+    fig, ax = plt.subplots(figsize=(10, 3))
 
     backend_names = ["AWS Lambda", "GCP Cloud Run", "IBM Code Engine"]
     for i, backend in enumerate(backends_list):
         ax.bar(x + i * width, means[:, i], width, yerr=stds[:, i], label=backend_names[i], capsize=5, color=backend_colors[i])
 
-    ax.set_ylabel('Cost Efficiency\n($1/\\$s$, mean ± std)', fontsize=17)
+    ax.set_ylabel('Cost-Performance\n($1/\\$s$, mean ± std)', fontsize=17)
     ax.set_xticks(x + width * (len(backends_list) - 1) / 2)
     ax.set_xticklabels(["Monte Carlo Stock", "Monte Carlo Pi", "Terasort", "Mandelbrot"], fontsize=16)
     ax.set_yscale('log')
@@ -78,5 +79,5 @@ if __name__ == "__main__":
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.tight_layout()
-    plt.savefig("plots/cost_efficiency_bars.pdf")
+    plt.savefig("plots/paper/cost_efficiency_bars.pdf")
 

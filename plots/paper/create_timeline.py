@@ -25,7 +25,7 @@ if __name__ == "__main__":
                 backend_str = BACKEND_STRING[backend_name]
                 backend_dict[backend_str] = benchmark_data
 
-        dst = f"plots/worker_activity_{benchmark}.pdf"
+        dst = f"plots/paper/worker_activity_{benchmark}.pdf"
         plot_worker_activity(
             backend_dict,
             dst,

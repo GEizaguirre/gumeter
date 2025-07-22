@@ -60,7 +60,7 @@ if __name__ == "__main__":
     x = np.arange(len(benchmarks_list))
     width = 0.15
 
-    fig, ax = plt.subplots(figsize=(10, 4))
+    fig, ax = plt.subplots(figsize=(10, 3))
 
     backend_names = ["AWS Lambda", "GCP Cloud Run", "IBM Code Engine"]
     for i, backend in enumerate(backends_list):
@@ -75,4 +75,4 @@ if __name__ == "__main__":
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.tight_layout()
-    plt.savefig("plots/execution_time_bars.pdf")
+    plt.savefig("plots/paper/execution_time_bars.pdf")

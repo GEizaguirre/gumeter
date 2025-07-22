@@ -21,7 +21,7 @@ if __name__ == "__main__":
 
             create_total_gflops_plot(
                 benchmark_data,
-                f"plots/flops_{backend_name}.pdf",
+                f"plots/paper/flops_{backend_name}.pdf",
                 show_legened=(b_i == 0),
                 show_flops_rate=(b_i == 0)
             )

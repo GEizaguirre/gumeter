@@ -19,7 +19,7 @@ def plot_worker_activity(backend_data_dict, dst, show_legend=False):
         if duration > max_overall_duration:
             max_overall_duration = duration
 
-    plt.figure(figsize=(6, 2))
+    plt.figure(figsize=(6, 1.5))
 
     pastel_colors = ['#FF8C42', "#C44B4B", '#1976D2']  # Darker pastel orange, green, blue
     color_cycle = iter(pastel_colors)
@@ -72,7 +72,7 @@ def plot_worker_activity(backend_data_dict, dst, show_legend=False):
         )
 
     plt.xlabel('Execution Time (s)', fontsize=12)
-    plt.ylabel('# Provisioned\nCPUs', fontsize=12)
+    plt.ylabel('# CPUs', fontsize=12)
     plt.xlim(0, max_overall_duration * 1.05)
     plt.ylim(bottom=0)
     plt.xticks(fontsize=12)
