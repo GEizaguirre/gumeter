@@ -75,6 +75,5 @@ if __name__ == "__main__":
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.tight_layout()
-    plt.savefig("elasticity_bars.pdf")
-                
-                
+    plt.savefig("plots/elasticity_bars.pdf")
+     

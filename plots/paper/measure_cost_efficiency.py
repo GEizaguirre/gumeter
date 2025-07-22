@@ -78,5 +78,5 @@ if __name__ == "__main__":
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.tight_layout()
-    plt.savefig("cost_efficiency_bars.pdf")
+    plt.savefig("plots/cost_efficiency_bars.pdf")
 

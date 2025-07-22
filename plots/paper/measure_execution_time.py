@@ -75,6 +75,4 @@ if __name__ == "__main__":
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     plt.tight_layout()
-    plt.savefig("execution_time_bars.pdf")
-                
-                
+    plt.savefig("plots/execution_time_bars.pdf")
