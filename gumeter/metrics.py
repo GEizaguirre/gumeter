@@ -1,5 +1,62 @@
 from datetime import datetime
+
 import numpy as np
+
+from gumeter.config import Backend
+
+LAMBDA_COST_S = 0.0000166667 * (1679 / 1024)
+LAMBDA_REQUEST_COST = 0.2 / (10**6)
+
+# Assuming request-billing
+CLOUD_RUN_CPU_COST_S = 0.000024
+CLOUD_RUN_MEM_COST_S = 0.0000025 * (2048 / 1024)
+CLOUD_RUN_REQUEST_COST = 0.4 / (10**6)
+
+CODE_ENGINE_CPU_COST_S = 0.00003431
+CODE_ENGINE_MEM_COST_S = 0.00000356 * (2048 / 1024)
+CODE_ENGINE_REQUEST_COST = 0.538 / (10**6)
+
+
+def get_cost(
+    backend_data_dict,
+    backend: str
+):
+
+    cost = 0.0
+    function_times = []
+    for key, value in backend_data_dict.items():
+        if key.startswith("stage") and isinstance(value, list):
+            for v in value:
+                function_times.append(
+                    v['worker_end_tstamp'] - v['worker_start_tstamp']
+                )
+
+    num_functions = len(function_times)
+    total_function_time = sum(function_times)
+
+    if backend == Backend.AWS_LAMBDA.value:
+        cost = (total_function_time * LAMBDA_COST_S) + (num_functions * LAMBDA_REQUEST_COST)
+    elif backend == Backend.GCP_CLOUDRUN.value:
+        cost = (total_function_time * CLOUD_RUN_CPU_COST_S) + \
+               (total_function_time * CLOUD_RUN_MEM_COST_S) + \
+               (num_functions * CLOUD_RUN_REQUEST_COST)
+    elif backend == Backend.CODE_ENGINE.value:
+        cost = (total_function_time * CODE_ENGINE_CPU_COST_S) + \
+               (total_function_time * CODE_ENGINE_MEM_COST_S) + \
+               (num_functions * CODE_ENGINE_REQUEST_COST)
+
+    return cost
+
+
+def get_execution_time(backend_data_dict):
+
+    if not backend_data_dict:
+        return 0.0
+
+    start_time_dt = datetime.fromtimestamp(backend_data_dict['start_time'])
+    end_time_dt = datetime.fromtimestamp(backend_data_dict['end_time'])
+    duration = (end_time_dt - start_time_dt).total_seconds()
+    return duration
 
 
 def get_step_values(time_axis, event_times, event_counts):
