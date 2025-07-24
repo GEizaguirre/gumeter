@@ -14,6 +14,7 @@ class Backend(Enum):
     AWS_BATCH = "aws_batch"
     CODE_ENGINE = "code_engine"
     GCP_CLOUDRUN = "gcp_cloudrun"
+    AWS_LAMBDA_REDIS = "aws_lambda_redis"
     LOCALHOST = "localhost"
 
 
@@ -21,12 +22,14 @@ class StorageBackend(Enum):
     AWS_S3 = "aws_s3"
     IBM_COS = "ibm_cos"
     GCP_STORAGE = "gcp_storage"
+    REDIS = "redis"
     MINIO = "minio"
 
 
 # Mapping of Backend to supported StorageBackends
 BACKEND_STORAGE = {
     Backend.AWS_LAMBDA.value: StorageBackend.AWS_S3.value,
+    Backend.AWS_LAMBDA_REDIS.value: StorageBackend.REDIS.value,
     Backend.AWS_BATCH.value: StorageBackend.AWS_S3.value,
     Backend.CODE_ENGINE.value: StorageBackend.IBM_COS.value,
     Backend.GCP_CLOUDRUN.value: StorageBackend.GCP_STORAGE.value,
@@ -34,9 +37,8 @@ BACKEND_STORAGE = {
 }
 
 
-DISTRIBUTED_BACKENDS = [
+BENCHMARK_BACKENDS = [
     Backend.AWS_LAMBDA,
-    Backend.AWS_BATCH,
     Backend.GCP_CLOUDRUN,
     Backend.CODE_ENGINE
 ]
@@ -44,6 +46,7 @@ DISTRIBUTED_BACKENDS = [
 
 RUNTIME_NAMES = {
     Backend.AWS_LAMBDA.value: "gumeter-lambda-runtime",
+    Backend.AWS_LAMBDA_REDIS.value: "gumeter-lambda-redis-runtime",
     Backend.AWS_BATCH.value: "gumeter-batch-runtime",
     Backend.CODE_ENGINE.value: "gumeter-code-engine-runtime",
     Backend.GCP_CLOUDRUN.value: "gumeter-gcp-cloudrun-runtime"
@@ -52,6 +55,7 @@ RUNTIME_NAMES = {
 
 TAGS = {
     Backend.AWS_LAMBDA.value: "1.0",
+    Backend.AWS_LAMBDA_REDIS.value: "1.0",
     Backend.AWS_BATCH.value: "1",
     Backend.CODE_ENGINE.value: "1",
     Backend.GCP_CLOUDRUN.value: "1"
@@ -60,6 +64,7 @@ TAGS = {
 
 BACKEND_MEMORY = {
     Backend.AWS_LAMBDA.value: 1769,
+    Backend.AWS_LAMBDA_REDIS.value: 1769,
     Backend.AWS_BATCH.value: 2048,
     Backend.CODE_ENGINE.value: 2048,
     Backend.GCP_CLOUDRUN.value: 2048,
@@ -73,11 +78,15 @@ DOCKER_BACKENDS = [
 
 INPUT_BUCKET = {
     Backend.AWS_LAMBDA.value: 'gumeter-data',
+    Backend.AWS_LAMBDA_REDIS.value: 'gumeter-data',
+    Backend.AWS_BATCH.value: 'gumeter-data',
+    Backend.CODE_ENGINE.value: 'gumeter-data',
 }
 
 BACKEND_STRING = {
     Backend.AWS_LAMBDA.value: "AWS Lambda",
     Backend.AWS_BATCH.value: "AWS Batch",
+    Backend.AWS_LAMBDA_REDIS.value: "AWS Lambda (Redis)",
     Backend.CODE_ENGINE.value: "IBM Code Engine",
     Backend.GCP_CLOUDRUN.value: "GCP Cloud Run",
     Backend.LOCALHOST.value: "Localhost"

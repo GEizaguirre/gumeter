@@ -170,9 +170,11 @@ def mapper(
     mapper_id: int,
     num_mappers: int,
     num_reducers: int,
-    partition_prefix: str = "part_"
+    partition_prefix: str = "part_",
+    storage_backend: str = None
 ):
-    storage = Storage()
+    input_storage = Storage()
+    storage = Storage(backend=storage_backend)
 
     lower_bound, upper_bound = get_read_range(
         data_size=data_size,
@@ -181,12 +183,13 @@ def mapper(
     )
 
     chunk = read_input(
-        storage=storage,
+        storage=input_storage,
         bucket=bucket,
         key=key,
         lower_bound=lower_bound,
         upper_bound=upper_bound
     )
+    print("Read %d bytes of input" % (len(chunk)))
 
     parsed_data = parse_input(chunk)
 
@@ -198,7 +201,7 @@ def mapper(
     write_partitions(
         storage=storage,
         bucket=bucket,
-        partition_prefix=f"{partition_prefix}_mapper_{mapper_id}",
+        partition_prefix=f"{partition_prefix}mapper_{mapper_id}",
         partitions=partitioned_data
     )
 
@@ -260,10 +263,12 @@ def reducer(
     partition_prefix: str,
     num_mappers: int,
     reducer_id: int,
-    out_prefix: str
+    out_prefix: str,
+    storage_backend: str = None
 ):
 
-    storage = Storage()
+    output_storage = Storage()
+    storage = Storage(backend=storage_backend)
 
     partition_list = read_partitions(
         storage=storage,
@@ -279,7 +284,7 @@ def reducer(
 
     output_key = f"{out_prefix}_reducer_{reducer_id}.pkl"
     write_output(
-        storage=storage,
+        storage=output_storage,
         bucket=bucket,
         output_key=output_key,
         df=sorted_data
@@ -305,9 +310,16 @@ def run_terasort(
         runtime = f"{docker_username}/{runtime}"
     bucket = INPUT_BUCKET.get(backend, "gumeter-data")
 
+    if backend == "aws_lambda_redis":
+        executor_backend = "aws_lambda"
+        executor_storage = "aws_s3"
+    else:
+        executor_backend = backend
+        executor_storage = storage
+
     fexec = FunctionExecutor(
-        backend=backend,
-        storage=storage,
+        backend=executor_backend,
+        storage=executor_storage,
         runtime_memory=memory,
         log_level=log_level,
         runtime=runtime
@@ -327,7 +339,8 @@ def run_terasort(
             "mapper_id": mapper_id,
             "num_mappers": num_mappers,
             "num_reducers": num_tasks,
-            "partition_prefix": PARTITION_PREFIX
+            "partition_prefix": PARTITION_PREFIX,
+            "storage_backend": storage
         }
         for mapper_id in range(num_mappers)
     ]
@@ -337,7 +350,8 @@ def run_terasort(
             "partition_prefix": PARTITION_PREFIX,
             "num_mappers": num_mappers,
             "reducer_id": reducer_id,
-            "out_prefix": OUTPUT_PREFIX
+            "out_prefix": OUTPUT_PREFIX,
+            "storage_backend": storage
         }
         for reducer_id in range(num_tasks)
     ]
@@ -357,8 +371,8 @@ def run_terasort(
     print("Stage 0 completed, starting Stage 1...")
 
     fexec = FunctionExecutor(
-        backend=backend,
-        storage=storage,
+        backend=executor_backend,
+        storage=executor_storage,
         runtime_memory=memory,
         log_level=log_level,
         runtime=runtime

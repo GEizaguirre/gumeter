@@ -2,7 +2,8 @@ import os
 
 from gumeter.config import (
     BACKEND_STORAGE,
-    RESULTS_DIR
+    RESULTS_DIR,
+    Backend
 )
 from gumeter.benchmarks.flops.flops import run_flops
 from gumeter.benchmarks.terasort.terasort import run_terasort
@@ -19,6 +20,14 @@ def run_benchmark(
     out_dir: str = RESULTS_DIR,
     num_replicas: int = 1
 ):
+    if (
+        benchmark_name != "terasort"
+        and backend == Backend.AWS_LAMBDA_REDIS.value
+    ):
+        raise ValueError(
+            "Backend AWS_LAMBDA_REDIS only supports the TeraSort benchmark."
+        )
+
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     storage = BACKEND_STORAGE[backend]

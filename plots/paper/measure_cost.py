@@ -1,7 +1,7 @@
 import os
 import json
 
-from gumeter.config import DISTRIBUTED_BACKENDS
+from gumeter.config import BENCHMARK_BACKENDS
 from gumeter.metrics import get_cost
 import numpy as np
 
@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     for bch_i, benchmark in enumerate(benchmarks):
         elasticity_metrics[benchmark] = {}
-        for b_i, backend in enumerate(DISTRIBUTED_BACKENDS):
+        for b_i, backend in enumerate(BENCHMARK_BACKENDS):
             backend_name = backend.value
             if backend_name != "aws_batch":
                 elasticity_metrics[benchmark][backend_name] = []
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     backend_colors = ['#FF8C42', "#C44B4B", '#1976D2']  # Darker pastel orange, green, blue
 
     benchmarks_list = benchmarks
-    backends_list = [backend.value for backend in DISTRIBUTED_BACKENDS if backend.value != "aws_batch"]
+    backends_list = [backend.value for backend in BENCHMARK_BACKENDS if backend.value != "aws_batch"]
 
     means = []
     stds = []

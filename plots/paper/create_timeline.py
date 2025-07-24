@@ -1,7 +1,10 @@
 import json
 import os
 
-from gumeter.config import BACKEND_STRING, DISTRIBUTED_BACKENDS
+from gumeter.config import (
+    BACKEND_STRING,
+    BENCHMARK_BACKENDS
+)
 from gumeter.plot.timeline import plot_worker_activity
 
 if __name__ == "__main__":
@@ -9,11 +12,16 @@ if __name__ == "__main__":
     replica_num = 3
     results_dir = "benchmark_results"
 
-    benchmarks = [ "montecarlo_stock", "montecarlo_pi", "terasort", "mandelbrot" ]
+    benchmarks = [
+        "montecarlo_stock",
+        "montecarlo_pi",
+        "terasort",
+        "mandelbrot"
+    ]
 
     for bch_i, benchmark in enumerate(benchmarks):
         backend_dict = {}
-        for b_i, backend in enumerate(DISTRIBUTED_BACKENDS):
+        for b_i, backend in enumerate(BENCHMARK_BACKENDS):
             backend_name = backend.value
             if backend_name != "aws_batch":
                 print(backend_name)

@@ -4,5 +4,6 @@ lithops
 lithops[aws]
 lithops[ibm]
 lithops[gcp]
+lithops[redis]
 scipy
 tzlocal

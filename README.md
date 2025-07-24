@@ -20,3 +20,15 @@ gumeter run-all gcp_cloudrun
 gumeter warm-up code_engine
 gumeter run-all code_engine
 ```
+
+## Setup
+
+### AWS Lambda
+
+### AWS Batch
+
+### AWS Lambda + Redis (only for TeraSort)
+
+### GCP Cloud Run
+
+### IBM Code Engine

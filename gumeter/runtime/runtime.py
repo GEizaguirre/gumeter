@@ -1,5 +1,4 @@
 import os
-import subprocess
 import sys
 
 from gumeter.backend.aws_lambda import set_lithops_config_aws
@@ -10,6 +9,7 @@ from gumeter.config import (
     TAGS,
     Backend
 )
+from gumeter.utils import _run_command
 
 
 def _create_gumeter_zip():
@@ -41,54 +41,10 @@ def _create_gumeter_zip():
         sys.exit(1)
 
 
-def _run_command(command: list, cwd: str = None, out=True):
-
-    print(f"Executing command: {' '.join(command)}")
-    try:
-        # Run the command, capture output, and check for errors
-        process = subprocess.Popen(
-            command,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            cwd=cwd
-        )
-        while True:
-            output = process.stdout.readline()
-            if output == '' and process.poll() is not None:
-                break
-            if out and output:
-                print(output, end='')
-        stderr = process.stderr.read()
-        if stderr:
-            print(f"Stderr: {stderr}")
-        if process.returncode != 0:
-            raise subprocess.CalledProcessError(
-                process.returncode,
-                command,
-                output,
-                stderr
-            )
-
-    except subprocess.CalledProcessError as e:
-        print(f"Error executing command: {e}")
-        print(f"Stdout: {e.stdout}")
-        print(f"Stderr: {e.stderr}")
-        sys.exit(1)
-    except FileNotFoundError:
-        print(
-            f"Error: Command '{command[0]}' not found.",
-            "Make sure it's in your PATH."
-        )
-        sys.exit(1)
-    except Exception as e:
-        print(f"An unexpected error occurred while running command: {e}")
-        sys.exit(1)
-
-
 def deploy_aws_lambda(
     runtime_name: str = RUNTIME_NAMES[Backend.AWS_LAMBDA.value],
-    tag: str = TAGS[Backend.AWS_LAMBDA.value]
+    tag: str = TAGS[Backend.AWS_LAMBDA.value],
+    dockerfile: str = None
 ):
 
     print(f"Building AWS Lambda runtime for gumeter: {runtime_name}:{tag}")
@@ -104,10 +60,11 @@ def deploy_aws_lambda(
             "--debug"
         ]
     )
+    dockerfile = dockerfile or "gumeter/runtime/Dockerfile_lambda"
     _run_command(
         [
             "lithops", "runtime", "build",
-            "-f", "gumeter/runtime/Dockerfile_lambda",
+            "-f", dockerfile,
             "-b", "aws_lambda",
             f"{runtime_name}:{tag}",
             "--debug"
@@ -268,6 +225,12 @@ def deploy_runtime(
         deploy_aws_lambda(
             runtime_name,
             tag
+        )
+    elif backend == "aws_lambda_redis":
+        deploy_aws_lambda(
+            runtime_name,
+            tag,
+            dockerfile="gumeter/runtime/Dockerfile_lambda_redis"
         )
     elif backend == "aws_batch":
         deploy_aws_batch(
