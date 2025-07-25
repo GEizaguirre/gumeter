@@ -5,7 +5,7 @@ from gumeter.utils import _run_command
 
 
 REDIS_CLUSTER_ID = "gumeter-redis-cluster"
-NODE_TYPE = "cache.m5.large"
+NODE_TYPE = "cache.m5.2xlarge"
 REDIS_OSS_VERSION = "7.0"
 REDIS_PORT = 6379
 REDIS_AUTH_TOKEN = "gumeter-password123!"
