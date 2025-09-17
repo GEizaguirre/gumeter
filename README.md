@@ -23,11 +23,9 @@ gumeter run-all code_engine
 
 ## Setup
 
+TODO
+
 ### AWS Lambda
-
-### AWS Batch
-
-### AWS Lambda + Redis (only for TeraSort)
 
 ### GCP Cloud Run
 
