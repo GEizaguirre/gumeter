@@ -1,17 +1,17 @@
 from setuptools import setup, find_packages
 
+from setuptools import setup, find_packages
+
+def parse_requirements(filename):
+    with open(filename) as f:
+        return [line.strip() for line in f if line.strip() and not line.startswith("#")]
+
 setup(
     name='gumeter',
     version='0.1.0',
     packages=find_packages(),
     include_package_data=True,
-    install_requires=[
-        'numpy',
-        'matplotlib',
-        'pandas',
-        # Add other dependencies like torch if needed,
-        # but consider making them optional or as extras
-    ],
+    install_requires=parse_requirements('requirements.txt'),
     entry_points={
         'console_scripts': [
             'gumeter=gumeter.cli:main',

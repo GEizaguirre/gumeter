@@ -1,9 +1,6 @@
-numpy
-matplotlib
-lithops
-lithops[aws]
-lithops[ibm]
-lithops[gcp]
-lithops[redis]
-scipy
-tzlocal
+numpy==2.2.6
+matplotlib==3.10.6
+pandas==2.3.2
+lithops[aws,ibm,gcp,redis]==3.6.2
+scipy==1.15.3
+tzlocal==5.3.1
