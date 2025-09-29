@@ -1,8 +1,16 @@
 import os
 import subprocess
 import sys
+import uuid
+import hashlib
 
 from lithops import Storage
+
+
+def device_id():
+    mac = uuid.getnode()  # gets MAC address (48-bit integer)
+    mac_str = str(mac).encode()
+    return hashlib.sha256(mac_str).hexdigest()[:8]
 
 
 def remove_objects(

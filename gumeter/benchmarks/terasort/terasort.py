@@ -308,7 +308,7 @@ def run_terasort(
     if backend in DOCKER_BACKENDS:
         docker_username = get_docker_username_from_config()
         runtime = f"{docker_username}/{runtime}"
-    bucket = INPUT_BUCKET.get(backend, "gumeter-data")
+    bucket = INPUT_BUCKET.get(backend)
 
     if backend == "aws_lambda_redis":
         executor_backend = "aws_lambda"

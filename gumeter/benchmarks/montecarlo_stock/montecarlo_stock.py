@@ -141,7 +141,7 @@ def run_montecarlo_stock(
     if backend in DOCKER_BACKENDS:
         docker_username = get_docker_username_from_config()
         runtime = f"{docker_username}/{runtime}"
-    bucket = INPUT_BUCKET.get(backend, "gumeter-data")
+    bucket = INPUT_BUCKET.get(backend)
 
     fexec = FunctionExecutor(
         backend=backend,

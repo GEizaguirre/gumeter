@@ -1,4 +1,5 @@
 from enum import Enum
+from gumeter.utils import device_id
 
 
 gumeter_VERSION = 1.0
@@ -77,10 +78,10 @@ DOCKER_BACKENDS = [
 ]
 
 INPUT_BUCKET = {
-    Backend.AWS_LAMBDA.value: 'gumeter-data',
-    Backend.AWS_LAMBDA_REDIS.value: 'gumeter-data',
-    Backend.AWS_BATCH.value: 'gumeter-data',
-    Backend.CODE_ENGINE.value: 'gumeter-data',
+    Backend.AWS_LAMBDA.value: 'gumeter-data-' + device_id(),
+    Backend.AWS_LAMBDA_REDIS.value: 'gumeter-data-' + device_id(),
+    Backend.AWS_BATCH.value: 'gumeter-data-' + device_id(),
+    Backend.CODE_ENGINE.value: 'gumeter-data-' + device_id(),
 }
 
 BACKEND_STRING = {
