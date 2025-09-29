@@ -1,0 +1,3 @@
+[submodule "teragen"]
+	path = teragen
+	url = https://github.com/gfinol/teragen-lithops.git
