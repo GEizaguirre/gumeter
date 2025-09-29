@@ -8,7 +8,7 @@ import numpy as np
 
 if __name__ == "__main__":
 
-    benchmarks = [ "montecarlo_stock", "montecarlo_pi", "terasort", "mandelbrot" ]
+    benchmarks = ["montecarlo_stock", "montecarlo_pi", "terasort", "mandelbrot"]
     elasticity_metrics = {}
 
     for bch_i, benchmark in enumerate(benchmarks):
@@ -19,7 +19,8 @@ if __name__ == "__main__":
                 elasticity_metrics[benchmark][backend_name] = []
                 results_dir = "benchmark_results"
                 matching_files = [
-                    f for f in os.listdir(results_dir)
+                    f
+                    for f in os.listdir(results_dir)
                     if f.startswith(f"{benchmark}_{backend_name}")
                 ]
                 for file_name in matching_files:
@@ -32,10 +33,16 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
     # Prepare data for plotting
-    backend_colors = ['#FF8C42', "#C44B4B", '#1976D2']  # Darker pastel orange, green, blue
+    backend_colors = [
+        "#FF8C42",
+        "#C44B4B",
+        "#1976D2",
+    ]  # Darker pastel orange, green, blue
 
     benchmarks_list = benchmarks
-    backends_list = [backend.value for backend in BENCHMARK_BACKENDS if backend.value != "aws_batch"]
+    backends_list = [
+        backend.value for backend in BENCHMARK_BACKENDS if backend.value != "aws_batch"
+    ]
 
     means = []
     stds = []
@@ -67,16 +74,25 @@ if __name__ == "__main__":
 
     backend_names = ["AWS Lambda", "GCP Cloud Run", "IBM Code Engine"]
     for i, backend in enumerate(backends_list):
-        ax.bar(x + i * width, means[:, i], width, yerr=stds[:, i], label=backend_names[i], capsize=5, color=backend_colors[i])
+        ax.bar(
+            x + i * width,
+            means[:, i],
+            width,
+            yerr=stds[:, i],
+            label=backend_names[i],
+            capsize=5,
+            color=backend_colors[i],
+        )
 
-    ax.set_ylabel('Elasticity (mean ± std)', fontsize=17)
+    ax.set_ylabel("Elasticity (mean ± std)", fontsize=17)
     ax.set_xticks(x + width * (len(backends_list) - 1) / 2)
-    ax.set_xticklabels(["Monte Carlo Stock", "Monte Carlo Pi", "Terasort", "Mandelbrot"], fontsize=16)
+    ax.set_xticklabels(
+        ["Monte Carlo Stock", "Monte Carlo Pi", "Terasort", "Mandelbrot"], fontsize=16
+    )
     ax.legend(fontsize=15)
-    ax.tick_params(axis='y', labelsize=16)
+    ax.tick_params(axis="y", labelsize=16)
     ax.set_axisbelow(True)
-    ax.grid(True, axis='y', linestyle='--', alpha=0.7)
+    ax.grid(True, axis="y", linestyle="--", alpha=0.7)
 
     plt.tight_layout()
     plt.savefig("plots/paper/elasticity_bars.pdf")
-

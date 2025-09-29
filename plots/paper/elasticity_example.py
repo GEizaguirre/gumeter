@@ -24,9 +24,12 @@ def smooth_cr(t, peaks, peak_times, peak_intervals, wait):
             if t < end_time:
                 return peaks[i]  # Abruptly reach maximum and stay for the wait time
             else:
-                return 1 + (peaks[i] - 1) * np.exp(-25 * (t - end_time))  # Exponential decay after wait
+                return 1 + (peaks[i] - 1) * np.exp(
+                    -25 * (t - end_time)
+                )  # Exponential decay after wait
 
     return 1
+
 
 Cr = np.array([smooth_cr(time, peaks, peak_times, peak_intervals, wait) for time in t])
 
@@ -36,9 +39,9 @@ Cp[0] = 1
 adaptation_rate = 0.06
 
 for i in range(1, len(t)):
-    Cp[i] = Cp[i-1] + adaptation_rate * (Cr[i] - Cp[i-1])
+    Cp[i] = Cp[i - 1] + adaptation_rate * (Cr[i] - Cp[i - 1])
 
-integral = np.trapezoid(Cr / Cp, t) / T
+integral = np.trapz(Cr / Cp, t) / T
 
 print(integral)
 
@@ -51,29 +54,41 @@ plt.rcParams["lines.linewidth"] = 3  # Thicker plot lines
 # Define time array and example data (replace with your actual data)
 t = np.linspace(0, 5, 1000)
 
-arrowstyle='<->'
-arrow_color='#36b700'
-lw=1.5
-mutation_scale=6
+arrowstyle = "<->"
+arrow_color = "#36b700"
+lw = 1.5
+mutation_scale = 6
 num_arrows = 3
 arrow_distance = 12
 start_distance = 10
 
 labeled = False
 
-line_colors = [ "#776bcd", "#ffb400" ]
+line_colors = ["#776bcd", "#ffb400"]
 fill_color = "white"
 
 # Create the plot
-with PdfPages('elasticity_burst.pdf') as pdf:
+with PdfPages("elasticity_burst.pdf") as pdf:
     plt.figure(figsize=(10, 4))  # Slightly taller for better proportions
 
     # Plot the lines
-    h1, = plt.plot(t, Cr, label='Required', color=line_colors[0], solid_capstyle='round')  # Blue for Required
-    h2, = plt.plot(t, Cp, label='Provided', color=line_colors[1], linestyle="--")  # Orange for Provided
+    (h1,) = plt.plot(
+        t, Cr, label="Required", color=line_colors[0], solid_capstyle="round"
+    )  # Blue for Required
+    (h2,) = plt.plot(
+        t, Cp, label="Provided", color=line_colors[1], linestyle="--"
+    )  # Orange for Provided
 
     # Fill the area between the lines with a hatch pattern
-    plt.fill_between(t, Cr, Cp, where=(Cr > Cp) | (Cp > Cr), interpolate=True, color=fill_color, alpha=0.3)
+    plt.fill_between(
+        t,
+        Cr,
+        Cp,
+        where=(Cr > Cp) | (Cp > Cr),
+        interpolate=True,
+        color=fill_color,
+        alpha=0.3,
+    )
 
     # Customize ticks and labels
     plt.xticks([0, 1, 2, 3, 4, 5], fontsize=12)
@@ -82,7 +97,7 @@ with PdfPages('elasticity_burst.pdf') as pdf:
     plt.xlabel("Time", fontsize=16)
 
     # Add grid for better readability
-    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.grid(True, linestyle="--", alpha=0.6)
 
     # Find the indexes where Cr changes from 1 to another number
     change_indexes = np.where(Cr[:-1] != Cr[1:])[0] + 1
@@ -98,14 +113,17 @@ with PdfPages('elasticity_burst.pdf') as pdf:
             ye = Cr[ui] + 8
             if ye - ys > 70:
 
-                plt.annotate('',
+                plt.annotate(
+                    "",
                     xy=(ta, ys),
                     xytext=(ta, ye),
-                    arrowprops=dict(arrowstyle=arrowstyle,
-                                    lw=lw,
-                                    color=arrow_color,
-                                    mutation_scale=mutation_scale),
-                    )
+                    arrowprops=dict(
+                        arrowstyle=arrowstyle,
+                        lw=lw,
+                        color=arrow_color,
+                        mutation_scale=mutation_scale,
+                    ),
+                )
 
             ui += arrow_distance
 
@@ -116,25 +134,34 @@ with PdfPages('elasticity_burst.pdf') as pdf:
             ys = Cr[ui] - 8
             ye = Cp[ui] - 15
             if ye - ys > 70:
-                plt.annotate('', 
+                plt.annotate(
+                    "",
                     xy=(ta, ys),
                     xytext=(ta, ye),
-                    arrowprops=dict(arrowstyle=arrowstyle,
-                                    lw=lw,
-                                    color=arrow_color,
-                                    mutation_scale=mutation_scale))
+                    arrowprops=dict(
+                        arrowstyle=arrowstyle,
+                        lw=lw,
+                        color=arrow_color,
+                        mutation_scale=mutation_scale,
+                    ),
+                )
             ui += arrow_distance
 
-    h3 = Line2D([], [], color=arrow_color, label='Stiffness', lw=4)
+    h3 = Line2D([], [], color=arrow_color, label="Stiffness", lw=4)
 
-    # Add legend        
+    # Add legend
     plt.legend(
-        handles=[h1,h2, h3],
-        labels=['Required', 'Provided', 'Stiffness'],
-        loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=3, fontsize=16, frameon=False)
+        handles=[h1, h2, h3],
+        labels=["Required", "Provided", "Stiffness"],
+        loc="upper center",
+        bbox_to_anchor=(0.5, 1.25),
+        ncol=3,
+        fontsize=16,
+        frameon=False,
+    )
 
-    plt.gca().spines['top'].set_visible(False)
-    plt.gca().spines['right'].set_visible(False)
+    plt.gca().spines["top"].set_visible(False)
+    plt.gca().spines["right"].set_visible(False)
 
     plt.tight_layout()
     pdf.savefig()
