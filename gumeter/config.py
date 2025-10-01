@@ -1,5 +1,12 @@
+import hashlib
+import uuid
 from enum import Enum
-from gumeter.utils import device_id
+
+
+def device_id():
+    mac = uuid.getnode()  # gets MAC address (48-bit integer)
+    mac_str = str(mac).encode()
+    return hashlib.sha256(mac_str).hexdigest()[:8]
 
 
 gumeter_VERSION = 1.0
@@ -82,6 +89,7 @@ INPUT_BUCKET = {
     Backend.AWS_LAMBDA_REDIS.value: 'gumeter-data-' + device_id(),
     Backend.AWS_BATCH.value: 'gumeter-data-' + device_id(),
     Backend.CODE_ENGINE.value: 'gumeter-data-' + device_id(),
+    Backend.GCP_CLOUDRUN.value: 'gumeter-data-' + device_id(),
 }
 
 BACKEND_STRING = {
