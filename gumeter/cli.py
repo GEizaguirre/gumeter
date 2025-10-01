@@ -13,6 +13,7 @@ from gumeter.config import (
 )
 from gumeter.runtime.runtime import deploy_runtime
 from gumeter.backend.set_config import set_config
+from gumeter.utils import push_data_to_storage
 
 
 def main():
@@ -150,6 +151,14 @@ def main():
         help="Backend to configure.",
     )
 
+    # --- Add data dependencies ---
+    subparsers.add_parser(
+        "init", help="Push data dependencies to the storage backends."
+    )
+
+    # --- Version info ---
+    subparsers.add_parser("version", help="Show gumeter version.")
+
     args = parser.parse_args()
 
     if args.command == "run":
@@ -202,6 +211,11 @@ def main():
         print(f"\033[95m\033[1mWarming up backend '{args.backend}'...\033[0m")
         run_warm_up(args.backend)
         print(f"\033[1;32m\033[1mBackend '{args.backend}' warmed up.\033[0m")
+    elif args.command == "init":
+        push_data_to_storage()
+        print(f"\033[1;32m\033[1mData dependencies pushed to storage.\033[0m")
+    elif args.command == "version":
+        print("gumeter version 1.0.0")
     else:
         parser.print_help()
 

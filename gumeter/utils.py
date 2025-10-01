@@ -1,24 +1,17 @@
 import os
 import subprocess
 import sys
-import uuid
-import hashlib
 
 from lithops import Storage
 
-
-def device_id():
-    mac = uuid.getnode()  # gets MAC address (48-bit integer)
-    mac_str = str(mac).encode()
-    return hashlib.sha256(mac_str).hexdigest()[:8]
+from gumeter.config import INPUT_BUCKET, StorageBackend, Backend
 
 
 def remove_objects(
-    storage: Storage,
-    bucket: str,
-    prefix: str
+        storage: Storage,
+        bucket: str,
+        prefix: str
 ):
-
     objects = storage.list_objects(
         bucket,
         prefix=prefix
@@ -34,9 +27,8 @@ def remove_objects(
 
 
 def get_fname_w_replica_num(
-    fname: str
+        fname: str
 ) -> str:
-
     if not fname.endswith(".json"):
         raise ValueError("Filename must end with .json")
 
@@ -62,34 +54,34 @@ def _run_command(command: list, cwd: str = None, out=True):
         process = subprocess.Popen(
             command,
             stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
             text=True,
+            bufsize=1,
+            universal_newlines=True,
             cwd=cwd
         )
+
         stdout_lines = []
-        while True:
-            output = process.stdout.readline()
-            if output == '' and process.poll() is not None:
-                break
-            if output:
-                stdout_lines.append(output)
-                if out:
-                    print(output, end='')
-        stderr = process.stderr.read()
+        for line in process.stdout:
+            stdout_lines.append(line)
+            if out:
+                print(line, end='', flush=True)
+
         process.wait()
         stdout = ''.join(stdout_lines)
+
         if process.returncode != 0:
             raise subprocess.CalledProcessError(
                 process.returncode,
                 command,
                 stdout,
-                stderr
+                ""
             )
         return stdout
+
     except subprocess.CalledProcessError as e:
         print(f"Error executing command: {e}")
         print(f"Stdout: {e.stdout}")
-        print(f"Stderr: {e.stderr}")
         raise e
     except FileNotFoundError:
         print(
@@ -100,3 +92,44 @@ def _run_command(command: list, cwd: str = None, out=True):
     except Exception as e:
         print(f"An unexpected error occurred while running command: {e}")
         raise e
+
+
+def push_data_to_storage():
+    storage = Storage(backend="aws_s3")
+    storage.create_bucket(bucket=INPUT_BUCKET.get("aws_lambda"))
+    filename = "terasort-5g"
+    if storage.list_objects(bucket=INPUT_BUCKET.get("aws_lambda"), prefix=filename):
+        print(f"Terasort file already exists in AWS S3 bucket '{INPUT_BUCKET.get('aws_lambda')}'. Skipping generation.")
+    else:
+        _run_command([
+            sys.executable, "teragen/teragen.py",
+            "-s", "5g",
+            "-b", INPUT_BUCKET.get("aws_lambda"),
+            "-k", filename,
+            "-p", "100",
+            "--unique-file"
+        ])
+        print(f"Terasort pushed to AWS S3")
+    print("Downloading terasort file from AWS S3...")
+    storage.download_file(
+        bucket=INPUT_BUCKET.get("aws_lambda"),
+        key=filename,
+        file_name="/tmp/" + filename
+    )
+    print(f"Terasort downloaded from AWS S3")
+    for sb, cb in zip([StorageBackend.IBM_COS, StorageBackend.GCP_STORAGE],
+                      [Backend.CODE_ENGINE, Backend.GCP_CLOUDRUN]):
+        storage = Storage(backend=sb.value)
+        storage.create_bucket(bucket=INPUT_BUCKET.get(cb.value))
+        print(f"Bucket '{INPUT_BUCKET.get(cb.value)}' created in {sb.value}.")
+        print(f"Uploading terasort file to {sb.value}...")
+        storage.put_object(
+            bucket=INPUT_BUCKET.get(cb.value),
+            key=filename,
+            body=open("/tmp/" + filename, "rb")
+        )
+        print(f"Terasort pushed to {sb.value}")
+
+
+if __name__ == "__main__":
+    push_data_to_storage()
