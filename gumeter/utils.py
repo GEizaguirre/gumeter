@@ -106,7 +106,7 @@ def push_data_to_storage():
             "-s", "5g",
             "-b", INPUT_BUCKET.get("aws_lambda"),
             "-k", filename,
-            "-p", "100",
+            "-p", "500",
             "--unique-file"
         ])
         print(f"Terasort pushed to AWS S3")
