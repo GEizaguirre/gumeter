@@ -63,9 +63,8 @@ def main():
         "run-all", help="Run all available benchmarks."
     )
     run_all_parser.add_argument(
-        "--backend",
+        "backend",
         type=str,
-        default="aws_lambda",
         choices=[b.value for b in Backend],
         help="Backend to use for the benchmark.",
     )
