@@ -1,2 +1,28 @@
 [build-system]
-requires = ["numpy", "setuptools", "wheel"]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["gumeter*"]
+exclude = ["plots*", "teragen*", "benchmark_results*"]
+
+[project]
+name = "gumeter"
+version = "0.1.0"
+authors = [
+  { name="Germán T. Eizaguirre", email="germantelmo.eizaguirre@urv.cat" }
+]
+readme = "README.md"
+requires-python = "==3.10.*"
+
+dependencies = [
+    "numpy==2.2.6",
+    "matplotlib==3.10.6",
+    "pandas==2.3.2",
+    "scipy==1.15.3",
+    "tzlocal==5.3.1",
+    "lithops[aws,ibm,gcp,redis] @ git+https://github.com/lithops-cloud/lithops.git@master"
+]
+
+[project.scripts]
+gumeter = "gumeter.cli:main"
