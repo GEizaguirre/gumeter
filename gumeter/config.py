@@ -81,7 +81,7 @@ BACKEND_MEMORY = {
 
 DOCKER_BACKENDS = [
     Backend.CODE_ENGINE.value,
-    Backend.GCP_CLOUDRUN.value
+    # Backend.GCP_CLOUDRUN.value  - problem detected; because of this is commented
 ]
 
 INPUT_BUCKET = {

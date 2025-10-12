@@ -3,7 +3,7 @@
 FROM python:3.10-slim-bookworm
 
 RUN apt-get update && apt-get install -y \
-        zip \
+        zip git \
         && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade --ignore-installed setuptools six pip \

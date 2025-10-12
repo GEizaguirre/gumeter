@@ -3,8 +3,9 @@ import subprocess
 import sys
 
 from lithops import Storage
+from lithops.constants import LITHOPS_TEMP_DIR
 
-from gumeter.config import INPUT_BUCKET, StorageBackend, Backend
+from gumeter.config import INPUT_BUCKET, BACKEND_STORAGE
 
 
 def remove_objects(
@@ -94,42 +95,70 @@ def _run_command(command: list, cwd: str = None, out=True):
         raise e
 
 
-def push_data_to_storage():
-    storage = Storage(backend="aws_s3")
-    storage.create_bucket(bucket=INPUT_BUCKET.get("aws_lambda"))
-    filename = "terasort-5g"
-    if storage.list_objects(bucket=INPUT_BUCKET.get("aws_lambda"), prefix=filename):
-        print(f"Terasort file already exists in AWS S3 bucket '{INPUT_BUCKET.get('aws_lambda')}'. Skipping generation.")
+def push_data_to_storage(compute_backend: str = None, force: bool = False):
+    print(
+        "\033[93m\033[1mDisclaimer: "
+        "This step can take a while (several minutes) and use up to 5GB of disk space.\033[0m"
+    )
+    aux_filename = "terasort-100m"
+    aux_filepath = "/tmp/" + aux_filename
+    if compute_backend and compute_backend not in BACKEND_STORAGE:
+        raise ValueError(
+            f"Unsupported backend '{compute_backend}'. Supported backends are: {list(BACKEND_STORAGE.keys())}")
+
+    # Step 1: Generate teragen file locally (100m)
+    final_filename = "terasort-5g"
+    final_filepath = "/tmp/" + final_filename
+    if os.path.exists(final_filepath) and not force:
+        print(f"Terasort file already exists locally at '{final_filepath}'. Skipping generation.")
     else:
         _run_command([
             sys.executable, "teragen/teragen.py",
-            "-s", "5g",
-            "-b", INPUT_BUCKET.get("aws_lambda"),
-            "-k", filename,
-            "-p", "500",
-            "--unique-file"
+            "-s", "100m",
+            "-b", "teragen-data",
+            "-k", aux_filename,
+            "-p", "8",
+            "--localhost"
         ])
-        print(f"Terasort pushed to AWS S3")
-    print("Downloading terasort file from AWS S3...")
-    storage.download_file(
-        bucket=INPUT_BUCKET.get("aws_lambda"),
-        key=filename,
-        file_name="/tmp/" + filename
-    )
-    print(f"Terasort downloaded from AWS S3")
-    for sb, cb in zip([StorageBackend.IBM_COS, StorageBackend.GCP_STORAGE],
-                      [Backend.CODE_ENGINE, Backend.GCP_CLOUDRUN]):
-        storage = Storage(backend=sb.value)
-        storage.create_bucket(bucket=INPUT_BUCKET.get(cb.value))
-        print(f"Bucket '{INPUT_BUCKET.get(cb.value)}' created in {sb.value}.")
-        print(f"Uploading terasort file to {sb.value}...")
-        storage.put_object(
-            bucket=INPUT_BUCKET.get(cb.value),
-            key=filename,
-            body=open("/tmp/" + filename, "rb")
-        )
-        print(f"Terasort pushed to {sb.value}")
+
+        # Join parts in a single file
+        lithops_temp_path = os.path.join(LITHOPS_TEMP_DIR, "teragen-data")
+        part_files = [os.path.join(lithops_temp_path, f) for f in os.listdir(lithops_temp_path) if
+                      f.startswith(aux_filename)]
+
+        with open(aux_filepath, 'wb') as outfile:
+            for part_file in part_files:
+                with open(part_file, 'rb') as infile:
+                    outfile.write(infile.read())
+
+        # Create final 5G file by repeating the 100M file 50 times (just for speeding up gumeter init)
+        with open(final_filepath, "wb") as outfile:
+            for _ in range(50):
+                with open(aux_filepath, "rb") as infile:
+                    outfile.write(infile.read())
+
+    # Step 2: Compose backends list
+    backends_to_upload = [compute_backend] if compute_backend else list(BACKEND_STORAGE.keys())
+
+    # Step 3: Upload to each backend in the list
+    for cb in backends_to_upload:
+        storage_backend = BACKEND_STORAGE.get(cb)
+        storage = Storage(backend=storage_backend)
+        bucket_name = INPUT_BUCKET.get(cb)
+        storage.create_bucket(bucket=bucket_name)
+
+        if storage.list_objects(bucket=bucket_name, prefix=final_filename):
+            print(
+                f"Terasort file already exists in {storage_backend} bucket '{bucket_name}'. Skipping upload.")
+        else:
+            print(f"Uploading terasort file to {storage_backend}...")
+            storage.put_object(
+                bucket=bucket_name,
+                key=final_filename,
+                body=open(final_filepath, "rb")
+            )
+            print(f"Terasort pushed to {storage_backend}")
 
 
 if __name__ == "__main__":
-    push_data_to_storage()
+    push_data_to_storage("gcp_cloudrun")

@@ -398,6 +398,7 @@ def run_terasort(
     json.dump(results, open(fdir, "w"))
     print(f"Results saved to {fdir}")
 
+    print("\033[93m\033[1mRemoving intermediate terasort data - this may take a while...\033[0m")
     remove_objects(
         storage=fexec.storage,
         bucket=bucket,

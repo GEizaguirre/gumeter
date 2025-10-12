@@ -11,6 +11,7 @@ RUN apt-get update \
       unzip \
       wget \
       zip \
+      git \
     # cleanup package lists, they are not used anymore in this image
     && rm -rf /var/lib/apt/lists/* \
     && apt-cache search linux-headers-generic

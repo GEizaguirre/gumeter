@@ -3,7 +3,7 @@ FROM python:3.10-slim-bullseye
 
 RUN apt-get update \
     # add the required packages
-    && apt-get install -y unzip \
+    && apt-get install -y unzip git \
     # cleanup package lists, they are not used anymore in this image
     && rm -rf /var/lib/apt/lists/* \
     && apt-cache search linux-headers-generic

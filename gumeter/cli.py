@@ -151,8 +151,19 @@ def main():
     )
 
     # --- Add data dependencies ---
-    subparsers.add_parser(
+    init_parser = subparsers.add_parser(
         "init", help="Push data dependencies to the storage backends."
+    )
+    init_parser.add_argument(
+        "--backend",
+        type=str,
+        default=None,
+        help="Compute backend to push data for. If not specified, data will be pushed to all supported backends.",
+    )
+    init_parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force re-generate data even if it's in local storage.",
     )
 
     # --- Version info ---
@@ -211,7 +222,7 @@ def main():
         run_warm_up(args.backend)
         print(f"\033[1;32m\033[1mBackend '{args.backend}' warmed up.\033[0m")
     elif args.command == "init":
-        push_data_to_storage()
+        push_data_to_storage(args.backend, args.force)
         print(f"\033[1;32m\033[1mData dependencies pushed to storage.\033[0m")
     elif args.command == "version":
         print("gumeter version 1.0.0")
