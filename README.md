@@ -70,6 +70,11 @@ All placeholders (terms enclosed in angle brackets <...>) must be replaced with 
 ```bash
 gumeter init
 ```
+or 
+```bash
+gumeter init --backend <aws_lambda|code_engine|gcp_cloudrun>
+```
+if you prefer to prepare the platform for just a single cloud provider.
 
 ## Deploy the execution runtimes
 ```bash
