@@ -147,7 +147,7 @@ def push_data_to_storage(compute_backend: str = None, force: bool = False):
         bucket_name = INPUT_BUCKET.get(cb)
         storage.create_bucket(bucket=bucket_name)
 
-        if storage.list_objects(bucket=bucket_name, prefix=final_filename):
+        if storage.list_objects(bucket=bucket_name, prefix=final_filename) and not force:
             print(
                 f"Terasort file already exists in {storage_backend} bucket '{bucket_name}'. Skipping upload.")
         else:
