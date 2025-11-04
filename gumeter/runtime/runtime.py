@@ -1,13 +1,15 @@
 import os
 import sys
 
+from lithops import Storage
+from lithops.storage.utils import StorageNoSuchKeyError
 from gumeter.backend.aws_lambda import set_lithops_config_aws
 from gumeter.backend.code_engine import get_docker_username_from_config
 from gumeter.config import (
     BACKEND_STORAGE,
     RUNTIME_NAMES,
     TAGS,
-    Backend
+    Backend, INPUT_BUCKET
 )
 from gumeter.utils import _run_command
 
@@ -260,3 +262,24 @@ def deploy_runtime(
         print("Cleanup complete.")
     except OSError as e:
         print(f"Error removing gumeter.zip: {e}")
+
+
+def clean_backend(backend: str):
+    print(f"Cleaning up resources for backend: {backend}")
+    if backend == "aws_lambda":
+        set_lithops_config_aws()
+    _run_command(
+        [
+            "lithops", "clean",
+            "-b", backend,
+            "-s", BACKEND_STORAGE[backend],
+            "--debug"
+        ]
+    )
+    storage = Storage(backend=BACKEND_STORAGE[backend])
+    try:
+        keys = storage.list_objects(bucket=INPUT_BUCKET[backend])
+        storage.delete_objects(bucket=INPUT_BUCKET[backend], key_list=[k['Key'] for k in keys])
+    except Exception:
+        pass
+    print(f"Cleanup complete for backend: {backend}")

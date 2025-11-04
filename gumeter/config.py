@@ -1,12 +1,16 @@
-import hashlib
-import uuid
 from enum import Enum
+
+import hashlib
+from pathlib import Path
 
 
 def device_id():
-    mac = uuid.getnode()  # gets MAC address (48-bit integer)
-    mac_str = str(mac).encode()
-    return hashlib.sha256(mac_str).hexdigest()[:8]
+    paths = [Path("/etc/machine-id"), Path("/var/lib/dbus/machine-id")]
+    for path in paths:
+        if path.exists():
+            machine_id = path.read_text().strip()
+            return hashlib.sha256(machine_id.encode()).hexdigest()[:8]
+    return None
 
 
 gumeter_VERSION = 1.0
@@ -44,13 +48,11 @@ BACKEND_STORAGE = {
     Backend.LOCALHOST.value: StorageBackend.MINIO.value
 }
 
-
 BENCHMARK_BACKENDS = [
     Backend.AWS_LAMBDA,
     Backend.GCP_CLOUDRUN,
     Backend.CODE_ENGINE
 ]
-
 
 RUNTIME_NAMES = {
     Backend.AWS_LAMBDA.value: "gumeter-lambda-runtime",
@@ -60,7 +62,6 @@ RUNTIME_NAMES = {
     Backend.GCP_CLOUDRUN.value: "gumeter-gcp-cloudrun-runtime"
 }
 
-
 TAGS = {
     Backend.AWS_LAMBDA.value: "1.0",
     Backend.AWS_LAMBDA_REDIS.value: "1.0",
@@ -68,7 +69,6 @@ TAGS = {
     Backend.CODE_ENGINE.value: "1",
     Backend.GCP_CLOUDRUN.value: "1"
 }
-
 
 BACKEND_MEMORY = {
     Backend.AWS_LAMBDA.value: 1769,

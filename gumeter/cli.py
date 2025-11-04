@@ -11,7 +11,7 @@ from gumeter.config import (
     RESULTS_DIR,
     Backend
 )
-from gumeter.runtime.runtime import deploy_runtime
+from gumeter.runtime.runtime import deploy_runtime, clean_backend
 from gumeter.backend.set_config import set_config
 from gumeter.utils import push_data_to_storage
 
@@ -128,6 +128,17 @@ def main():
         help="Optional tag for the runtime.",
     )
 
+    # --- Clean up backend ---
+    cleanup_parser = subparsers.add_parser(
+        "cleanup", help="Clean up resources for a specific backend."
+    )
+    cleanup_parser.add_argument(
+        "backend",
+        type=str,
+        choices=[b.value for b in Backend],
+        help="Backend to clean up.",
+    )
+
     # --- Warm up backend ---
     warmup_parser = subparsers.add_parser(
         "warmup", help="Warm up a specific backend."
@@ -211,6 +222,11 @@ def main():
         )
         print(
             f"\033[1;32m\033[1mRuntime for '{args.backend}' deployed.\033[0m"
+        )
+    elif args.command == "cleanup":
+        clean_backend(args.backend)
+        print(
+            f"\033[1;32m\033[1mResources for '{args.backend}' cleaned up.\033[0m"
         )
     elif args.command == "set-config":
         set_config(args.backend)
