@@ -166,7 +166,7 @@ def main():
         "init", help="Push data dependencies to the storage backends."
     )
     init_parser.add_argument(
-        "--backend",
+        "backend",
         type=str,
         default=None,
         help="Compute backend to push data for. If not specified, data will be pushed to all supported backends.",
